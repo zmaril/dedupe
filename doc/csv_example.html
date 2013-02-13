@@ -124,10 +124,10 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-7'>#</a>
       </div>
-      <p>In order to train dedupe, we need to compare some records. We can't compare them all, because the number of possible combinations can be much too large (~0.5*N^2). We take a random subset of our original data to pass to our training.</p>
+      <p>In order to train dedupe, we need to compare some records. We can't compare them all, because the number of possible combinations can be much too large (~0.5*N^2). We take a random sample of all possible pairs.</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="n">data_d_sample</span> <span class="o">=</span> <span class="n">dedupe</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">sampleDict</span><span class="p">(</span><span class="n">data_d</span><span class="p">,</span> <span class="mi">700</span><span class="p">)</span></pre></div>
+      <div class="highlight"><pre><span class="n">data_sample</span> <span class="o">=</span> <span class="n">dedupe</span><span class="o">.</span><span class="n">dataSample</span><span class="p">(</span><span class="n">data_d</span><span class="p">,</span> <span class="mi">150000</span><span class="p">)</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -222,7 +222,7 @@
     <div class='code'>
       <div class="highlight"><pre>  <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">training_file</span><span class="p">)</span> <span class="p">:</span>
     <span class="k">print</span> <span class="s">&#39;reading labeled examples from &#39;</span><span class="p">,</span> <span class="n">training_file</span>
-    <span class="n">deduper</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">data_d_sample</span><span class="p">,</span> <span class="n">training_file</span><span class="p">)</span>
+    <span class="n">deduper</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">data_sample</span><span class="p">,</span> <span class="n">training_file</span><span class="p">)</span>
 
     <span class="k">print</span> <span class="s">&#39;starting active labeling...&#39;</span>
     <span class="k">print</span> <span class="s">&#39;finding uncertain pairs...&#39;</span></pre></div>
@@ -262,7 +262,7 @@
     </div>
     <div class='code'>
       <div class="highlight"><pre>  <span class="k">else</span><span class="p">:</span>
-      <span class="n">deduper</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">data_d_sample</span><span class="p">,</span> <span class="n">dedupe</span><span class="o">.</span><span class="n">training_sample</span><span class="o">.</span><span class="n">consoleLabel</span><span class="p">)</span></pre></div>
+      <span class="n">deduper</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">data_sample</span><span class="p">,</span> <span class="n">dedupe</span><span class="o">.</span><span class="n">training_sample</span><span class="o">.</span><span class="n">consoleLabel</span><span class="p">)</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
