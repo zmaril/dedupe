@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>sqlite_clustering.py</title>
+  <link rel="stylesheet" href="pycco.css">
+</head>
+<body>
+<div id="background"></div>
+<div id='container'>
+  <div class='section'>
+    <div class='docs'><h1>sqlite_clustering.py</h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      <p>This is an example of working with very large data. There are about
+700,000 unduplicated donors in this database of Illinois political
+campaign contributions.</p>
+<p>While we might be able to keep these donor records in memory, we
+cannot possibly store all the comparison pairs we will make.</p>
+<p>Because of performance issues that we are still working through, this
+example is broken into two files, sqlite_blocking.py which blocks the
+data, sqlite_clustering.py which clusters the blocked data.</p>
+<p>!/usr/bin/python
+-<em>- coding: utf-8 -</em>-</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">sqlite3</span>
+<span class="kn">import</span> <span class="nn">dedupe</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s">&#39;./examples/sqlite_example/&#39;</span><span class="p">)</span>
+<span class="n">settings_file</span> <span class="o">=</span> <span class="s">&#39;sqlite_example_settings.json&#39;</span>
+
+<span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+<span class="n">con</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&quot;illinois_contributions.db&quot;</span><span class="p">)</span>
+<span class="n">con</span><span class="o">.</span><span class="n">row_factory</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Row</span>
+<span class="n">con</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;ATTACH DATABASE &#39;blocking_map.db&#39; AS bm&quot;</span><span class="p">)</span>
+<span class="n">cur</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+
+
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">settings_file</span><span class="p">):</span>
+    <span class="k">print</span> <span class="s">&#39;reading from &#39;</span><span class="p">,</span> <span class="n">settings_file</span>
+    <span class="n">deduper</span> <span class="o">=</span> <span class="n">dedupe</span><span class="o">.</span><span class="n">Dedupe</span><span class="p">(</span><span class="n">settings_file</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+  <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Settings File Not Found&#39;</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <p>We grab all the block_keys that are associated with more than one
+record associated with it. These associated records will make up a
+block of records we will compare within.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">blocking_key_sql</span> <span class="o">=</span> <span class="s">&quot;SELECT key, COUNT(donor_id) AS num_candidates &quot;</span> \
+                   <span class="s">&quot;FROM bm.blocking_map GROUP BY key HAVING num_candidates &gt; 1&quot;</span>
+
+<span class="n">block_keys</span> <span class="o">=</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s">&#39;key&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">con</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">blocking_key_sql</span><span class="p">))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      <p>This grabs a block of records for comparison. We rely on the
+ordering of the donor_ids</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">donor_select</span> <span class="o">=</span> <span class="s">&quot;SELECT donor_id, LOWER(city) AS city, &quot;</span> \
+               <span class="s">&quot;LOWER(first_name) AS first_name, &quot;</span> \
+               <span class="s">&quot;LOWER(last_name) AS last_name, &quot;</span> \
+               <span class="s">&quot;LOWER(zip) AS zip, LOWER(state) AS state, &quot;</span> \
+               <span class="s">&quot;LOWER(address_1) AS address_1, &quot;</span> \
+               <span class="s">&quot;LOWER(address_2) AS address_2 FROM donors &quot;</span> \
+               <span class="s">&quot;INNER JOIN bm.blocking_map USING (donor_id) &quot;</span> \
+               <span class="s">&quot;WHERE key = ? ORDER BY donor_id&quot;</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      <p>This generator yields blocks of data</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span> <span class="nf">candidates_gen</span><span class="p">()</span> <span class="p">:</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">block_key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">block_keys</span><span class="p">)</span> <span class="p">:</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">10000</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">:</span>
+          <span class="k">print</span> <span class="n">i</span><span class="p">,</span> <span class="s">&quot;blocks&quot;</span>
+          <span class="k">print</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span><span class="p">,</span> <span class="s">&quot;seconds&quot;</span>
+
+        <span class="k">yield</span> <span class="p">((</span><span class="n">row</span><span class="p">[</span><span class="s">&#39;donor_id&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">con</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">donor_select</span><span class="p">,</span>
+                                                             <span class="p">(</span><span class="n">block_key</span><span class="p">,)))</span>
+
+    
+<span class="k">print</span> <span class="s">&#39;clustering...&#39;</span>
+<span class="n">clustered_dupes</span> <span class="o">=</span> <span class="n">deduper</span><span class="o">.</span><span class="n">duplicateClusters</span><span class="p">(</span><span class="n">candidates_gen</span><span class="p">())</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-4'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-4'>#</a>
+      </div>
+      <p>duplicateClusters gives us sequence of tuples of donor_ids that
+Dedupe believes all refer to the same entity. We write this out
+onto an entity map tbale</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">con</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;DROP TABLE IF EXISTS entity_map&quot;</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&#39;creating entity_map database&#39;</span>
+<span class="n">con</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;CREATE TABLE entity_map &quot;</span>
+            <span class="s">&quot;(donor_id TEXT, head_id TEXT, PRIMARY KEY(donor_id))&quot;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">cluster</span> <span class="ow">in</span> <span class="n">clustered_dupes</span> <span class="p">:</span>
+    <span class="n">cluster_head</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">cluster</span><span class="o">.</span><span class="n">pop</span><span class="p">())</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&#39;INSERT INTO entity_map VALUES (?, ?)&#39;</span><span class="p">,</span>
+                <span class="p">(</span><span class="n">cluster_head</span><span class="p">,</span> <span class="n">cluster_head</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">cluster</span> <span class="p">:</span>
+        <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&#39;INSERT INTO entity_map VALUES (?, ?)&#39;</span><span class="p">,</span>
+                    <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="n">cluster_head</span><span class="p">))</span>
+
+<span class="n">con</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+<span class="n">con</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;CREATE INDEX head_index ON entity_map (head_id)&quot;</span><span class="p">)</span>
+<span class="n">con</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        
+<span class="k">print</span> <span class="s">&#39;# duplicate sets&#39;</span>
+<span class="k">print</span> <span class="nb">len</span><span class="p">(</span><span class="n">clustered_dupes</span><span class="p">)</span>
+
+<span class="n">cur</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">con</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="k">print</span> <span class="s">&#39;ran in&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span><span class="p">,</span> <span class="s">&#39;seconds&#39;</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>
