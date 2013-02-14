@@ -59,9 +59,9 @@ data, sqlite_clustering.py which clusters the blocked data.</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-1'>#</a>
       </div>
-      <p>We grab all the block_keys that are associated with more than one
-record associated with it. These associated records will make up a
-block of records we will compare within.</p>
+      <p>We grab all the block_keys with more than one record associated with
+it. These associated records will make up a block of records we will
+compare within.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="n">blocking_key_sql</span> <span class="o">=</span> <span class="s">&quot;SELECT key, COUNT(donor_id) AS num_candidates &quot;</span> \
