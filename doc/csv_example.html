@@ -17,7 +17,9 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-0'>#</a>
       </div>
-      <p>The following code demonstrates how to use dedupe with a flat (CSV) file. All operations are performed in memory, so it won't work for data sets that are larger than ~10,000 rows. </p>
+      <p>The following code demonstrates how to use dedupe with a flat (CSV)
+file. All operations are performed in memory, so it won't work for
+data sets that are larger than ~10,000 rows.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>
@@ -46,7 +48,10 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-2'>#</a>
       </div>
-      <p>We start with a csv file with our messy data. In this example, it is listings of early childhood education centers in Chicago compiled from several different sources. The output file will also be a csv, but with our clustered results.</p>
+      <p>We start with a csv file with our messy data. In this example, it is
+listings of early childhood education centers in Chicago compiled
+from several different sources. The output file will also be a csv,
+but with our clustered results.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s">&#39;./examples/csv_example/&#39;</span><span class="p">)</span>
@@ -62,7 +67,9 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-3'>#</a>
       </div>
-      <p>Our goal here is to find meaningful duplicates, so things like casing, extra spaces, quotes and new lines can be ignored. preProcess removes these.</p>
+      <p>Our goal here is to find meaningful duplicates, so things like
+casing, extra spaces, quotes and new lines can be
+ignored. preProcess removes these.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="k">def</span> <span class="nf">preProcess</span><span class="p">(</span><span class="n">column</span><span class="p">)</span> <span class="p">:</span></pre></div>
@@ -90,7 +97,10 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-5'>#</a>
       </div>
-      <p>We read in the data from a CSV file and as we do, we preProcess it. The output is a dictionary of records, where the key is a unique record ID (created with enumerate()) and each value is a frozendict (basically a hashable dictionary) of the row fields.</p>
+      <p>We read in the data from a CSV file and as we do, we preProcess
+it. The output is a dictionary of records, where the key is a unique
+record ID (created with enumerate()) and each value is a frozendict
+(basically a hashable dictionary) of the row fields.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="k">def</span> <span class="nf">readData</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="p">:</span></pre></div>
@@ -124,7 +134,10 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-7'>#</a>
       </div>
-      <p>In order to train dedupe, we need to compare some records. We can't compare them all, because the number of possible combinations can be much too large (~0.5*N^2). We take a random sample of all possible pairs.</p>
+      <p>In order to train dedupe, we need to compare some records. We can't
+compare them all, because the number of possible combinations can be
+much too large (~0.5*N^2). We take a random sample of all possible
+pairs.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="n">data_sample</span> <span class="o">=</span> <span class="n">dedupe</span><span class="o">.</span><span class="n">dataSample</span><span class="p">(</span><span class="n">data_d</span><span class="p">,</span> <span class="mi">150000</span><span class="p">)</span></pre></div>
@@ -136,7 +149,9 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-8'>#</a>
       </div>
-      <p>If the settings files, which we mentioned above, exists, then we read it in. Passing in a settings file is one of the three ways to initialize a dedupe instance.</p>
+      <p>If the settings files, which we mentioned above, exists, then we
+read it in. Passing in a settings file is one of the three ways to
+initialize a dedupe instance.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">settings_file</span><span class="p">):</span>
@@ -150,7 +165,9 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-9'>#</a>
       </div>
-      <p>Alternately, we can initialize a dedupe instance by declaring a field definition for the data. This defines the fields that we want to compare and how to compare them.</p>
+      <p>Alternately, we can initialize a dedupe instance by declaring a
+field definition for the data. This defines the fields that we want
+to compare and how to compare them.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>
@@ -162,7 +179,9 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-10'>#</a>
       </div>
-      <p>A field definition is a dictionary where the keys are the fields that will be used for training a model and the values are the field specification.</p>
+      <p>A field definition is a dictionary where the keys are the fields
+that will be used for training a model and the values are the field
+specification.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>
@@ -187,7 +206,9 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-12'>#</a>
       </div>
-      <p>A 'String' type field must have as its key a name of a field as it appears in the data dictionary and a type declaration ex. {'Phone': {type: 'String'}}</p>
+      <p>A 'String' type field must have as its key a name of a field as it
+appears in the data dictionary and a type declaration ex. {'Phone':
+{type: 'String'}}</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="k">else</span><span class="p">:</span>
@@ -205,7 +226,11 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-13'>#</a>
       </div>
-      <p>Dedupe will learn to predict if two records are duplicates based upon their similarity. In this example, that similarity is a weighted combination of the field by field <a href="http://en.wikipedia.org/wiki/String_metric">string similarity</a> between records. Dedupe learns these weights.</p>
+      <p>Dedupe will learn to predict if two records are duplicates based
+upon their similarity. In this example, that similarity is a
+weighted combination of the field by field <a href="http://en.wikipedia.org/wiki/String_metric">string
+similarity</a> between
+records. Dedupe learns these weights.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>
@@ -217,7 +242,10 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-14'>#</a>
       </div>
-      <p>Dedupe will ask a user to label pairs of records as duplicates or not. These labeled records are saved and can be reused for later training. To train dedupe with these examples, call deduper.train as shown.</p>
+      <p>Dedupe will ask a user to label pairs of records as duplicates or
+not. These labeled records are saved and can be reused for later
+training. To train dedupe with these examples, call deduper.train
+as shown.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre>  <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">training_file</span><span class="p">)</span> <span class="p">:</span>
@@ -234,7 +262,10 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-15'>#</a>
       </div>
-      <p>Dedupe can actively learn, that means it will select the records it is most uncertain about and will ask the user to label it. It will then learn from that labeling, update, and ask for the next most uncertain pair.</p>
+      <p>Dedupe can actively learn, that means it will select the records
+it is most uncertain about and will ask the user to label it. It
+will then learn from that labeling, update, and ask for the next
+most uncertain pair.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>
@@ -246,7 +277,8 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-16'>#</a>
       </div>
-      <p>To do this, train method requires that you pass it a function to do this labeling, in this case, consoleLabel.</p>
+      <p>To do this, train method requires that you pass it a function to
+do this labeling, in this case, consoleLabel.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>
@@ -258,7 +290,8 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-17'>#</a>
       </div>
-      <p>For consoleLabel, use 'y', 'n' and 'u' keys to flag duplicates, 'f' when you are finished.</p>
+      <p>For consoleLabel, use 'y', 'n' and 'u' keys to flag duplicates,
+'f' when you are finished.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre>  <span class="k">else</span><span class="p">:</span>
@@ -283,7 +316,9 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-19'>#</a>
       </div>
-      <p>Now that dedupe knows how to compare records, we use the same training data to block records in to groups. The goal is to reduce the total number of comparisons.</p>
+      <p>Now that dedupe knows how to compare records, we use the same
+training data to block records in to groups. The goal is to reduce
+the total number of comparisons.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>
@@ -295,7 +330,9 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-20'>#</a>
       </div>
-      <p>blockingFunction learns the blocking rules, if not already defined in settings_file and returns a function. That function will take a record and return all the blocks it will fit in to.</p>
+      <p>blockingFunction learns the blocking rules, if not already defined
+in settings_file and returns a function. That function will take a
+record and return all the blocks it will fit in to.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="k">print</span> <span class="s">&#39;blocking...&#39;</span>
@@ -308,7 +345,8 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-21'>#</a>
       </div>
-      <p>Save our settings file, which includes learned weights and blcoking rules.</p>
+      <p>Save our settings file, which includes learned weights and blcoking
+rules.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="n">deduper</span><span class="o">.</span><span class="n">writeSettings</span><span class="p">(</span><span class="n">settings_file</span><span class="p">)</span></pre></div>
@@ -320,10 +358,12 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-22'>#</a>
       </div>
-      <p>blockingIndex loads all the original data in to memory and places them in to blocks. Each record can be blocked in many ways, so for larger data, memory will be a limiting factor.</p>
+      <p>blockingIndex loads all the original data in to memory and places
+them in to blocks. Each record can be blocked in many ways, so for
+larger data, memory will be a limiting factor.</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="n">blocked_data</span> <span class="o">=</span> <span class="n">dedupe</span><span class="o">.</span><span class="n">blocking</span><span class="o">.</span><span class="n">blockingIndex</span><span class="p">(</span><span class="n">data_d</span><span class="p">,</span> <span class="n">blocker</span><span class="p">)</span></pre></div>
+      <div class="highlight"><pre><span class="n">blocked_data</span> <span class="o">=</span> <span class="n">dedupe</span><span class="o">.</span><span class="n">blockData</span><span class="p">(</span><span class="n">data_d</span><span class="p">,</span> <span class="n">blocker</span><span class="p">)</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -332,7 +372,8 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-23'>#</a>
       </div>
-      <p>duplicateClusters will return sets of record IDs that dedupe believes are all referrin to the same entity.</p>
+      <p>duplicateClusters will return sets of record IDs that dedupe
+believes are all referring to the same entity.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>
@@ -363,7 +404,9 @@ cluster_threshold --  Number between 0 and 1 (default is .5). Lowering the
       <div class='octowrap'>
         <a class='octothorpe' href='#section-25'>#</a>
       </div>
-      <p>Now that we have our clustered duplicates, we write our original data back out to a CSV with a new column called 'Cluster ID' which indicates which records refer to each other.</p>
+      <p>Now that we have our clustered duplicates, we write our original
+data back out to a CSV with a new column called 'Cluster ID' which
+indicates which records refer to each other.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="k">print</span> <span class="s">&#39;# duplicate sets&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">clustered_dupes</span><span class="p">)</span>
