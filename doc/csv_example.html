@@ -294,8 +294,7 @@ do this labeling, in this case, consoleLabel.</p>
 'f' when you are finished.</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>  <span class="k">else</span><span class="p">:</span>
-      <span class="n">deduper</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">data_sample</span><span class="p">,</span> <span class="n">dedupe</span><span class="o">.</span><span class="n">training_sample</span><span class="o">.</span><span class="n">consoleLabel</span><span class="p">)</span></pre></div>
+      <div class="highlight"><pre>  <span class="n">deduper</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">data_sample</span><span class="p">,</span> <span class="n">dedupe</span><span class="o">.</span><span class="n">training_sample</span><span class="o">.</span><span class="n">consoleLabel</span><span class="p">)</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -307,7 +306,7 @@ do this labeling, in this case, consoleLabel.</p>
       <p>Save away our labeled training pairs to a JSON file.</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>      <span class="n">deduper</span><span class="o">.</span><span class="n">writeTraining</span><span class="p">(</span><span class="n">training_file</span><span class="p">)</span></pre></div>
+      <div class="highlight"><pre>  <span class="n">deduper</span><span class="o">.</span><span class="n">writeTraining</span><span class="p">(</span><span class="n">training_file</span><span class="p">)</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -363,7 +362,8 @@ them in to blocks. Each record can be blocked in many ways, so for
 larger data, memory will be a limiting factor.</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="n">blocked_data</span> <span class="o">=</span> <span class="n">dedupe</span><span class="o">.</span><span class="n">blockData</span><span class="p">(</span><span class="n">data_d</span><span class="p">,</span> <span class="n">blocker</span><span class="p">)</span></pre></div>
+      <div class="highlight"><pre><span class="n">blocked_data</span> <span class="o">=</span> <span class="n">dedupe</span><span class="o">.</span><span class="n">blockData</span><span class="p">(</span><span class="n">data_d</span><span class="p">,</span> <span class="n">blocker</span><span class="p">)</span>
+<span class="n">blocked_data</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">blocked_data</span><span class="p">)</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -372,11 +372,13 @@ larger data, memory will be a limiting factor.</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-23'>#</a>
       </div>
-      <p>duplicateClusters will return sets of record IDs that dedupe
-believes are all referring to the same entity.</p>
+      <p>There is always a tradeoff between precision and recall. This function
+tries to find the threshold that will maximize a weighted average of both.
+When we set the recall weight to 2, we are saying we care twice as much
+about recall as we do precision</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre></pre></div>
+      <div class="highlight"><pre><span class="n">threshold</span> <span class="o">=</span> <span class="n">deduper</span><span class="o">.</span><span class="n">goodThreshold</span><span class="p">(</span><span class="n">blocked_data</span><span class="p">,</span> <span class="n">recall_weight</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -385,17 +387,12 @@ believes are all referring to the same entity.</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-24'>#</a>
       </div>
-      <p>pairwise_threshold -- Number between 0 and 1 (default is .5). We will only 
-                      consider as duplicates  ecord pairs as duplicates if 
-                      their estimated duplicate likelihood is greater than 
-                      the pairwise threshold. 
-cluster_threshold --  Number between 0 and 1 (default is .5). Lowering the 
-                      number will increase precision, raising it will increase
-                      recall</p>
+      <p>duplicateClusters will return sets of record IDs that dedupe
+believes are all referring to the same entity.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="k">print</span> <span class="s">&#39;clustering...&#39;</span>
-<span class="n">clustered_dupes</span> <span class="o">=</span> <span class="n">deduper</span><span class="o">.</span><span class="n">duplicateClusters</span><span class="p">(</span><span class="n">blocked_data</span><span class="p">,</span> <span class="n">cluster_threshold</span><span class="o">=.</span><span class="mi">5</span><span class="p">)</span></pre></div>
+<span class="n">clustered_dupes</span> <span class="o">=</span> <span class="n">deduper</span><span class="o">.</span><span class="n">duplicateClusters</span><span class="p">(</span><span class="n">blocked_data</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
