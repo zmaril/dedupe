@@ -163,9 +163,9 @@ ignored. <code>preProcess</code> removes these.</p>
         <a class='octothorpe' href='#section-9'>#</a>
       </div>
       <p>We read in the data from a CSV file and as we do, we <code>preProcess</code>
-it. The output is a dictionary of records, where the key is a unique
-record ID (created with <code>enumerate()</code>) and each value is a <code>frozendict</code>
-(basically a hashable dictionary) of the row fields.</p>
+it. The output is a dictionary of records, where the key is a
+unique record ID and each value is a <code>frozendict</code> (basically a
+hashable dictionary) of the row fields.</p>
 <p><strong>Currently, dedupe depends upon records' unique ids being integers
 with no integers skipped. The smallest valued unique id must be 0 or
 1.</strong></p>
@@ -188,10 +188,11 @@ requirement will likely be relaxed in the future.</strong></p>
       <div class="highlight"><pre>    <span class="n">data_d</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s">&#39;,&#39;</span><span class="p">,</span> <span class="n">quotechar</span><span class="o">=</span><span class="s">&#39;&quot;&#39;</span><span class="p">)</span>
-        <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">row</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">reader</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">reader</span><span class="p">:</span>
             <span class="n">clean_row</span> <span class="o">=</span> <span class="p">[(</span><span class="n">k</span><span class="p">,</span> <span class="n">preProcess</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span>
                          <span class="n">row</span><span class="o">.</span><span class="n">iteritems</span><span class="p">()]</span>
-            <span class="n">data_d</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">dedupe</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frozendict</span><span class="p">(</span><span class="n">clean_row</span><span class="p">)</span>
+            <span class="n">row_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s">&#39;Id&#39;</span><span class="p">])</span>
+            <span class="n">data_d</span><span class="p">[</span><span class="n">row_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">dedupe</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frozendict</span><span class="p">(</span><span class="n">clean_row</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="p">(</span><span class="n">data_d</span><span class="p">,</span> <span class="n">reader</span><span class="o">.</span><span class="n">fieldnames</span><span class="p">)</span>
 
@@ -225,7 +226,7 @@ initialize a dedupe instance. We won't need to do any learning.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">settings_file</span><span class="p">):</span>
-    <span class="k">print</span> <span class="s">&#39;reading from &#39;</span><span class="p">,</span> <span class="n">settings_file</span>
+    <span class="k">print</span> <span class="s">&#39;reading from&#39;</span><span class="p">,</span> <span class="n">settings_file</span>
     <span class="n">deduper</span> <span class="o">=</span> <span class="n">dedupe</span><span class="o">.</span><span class="n">Dedupe</span><span class="p">(</span><span class="n">settings_file</span><span class="p">)</span></pre></div>
     </div>
   </div>
@@ -558,22 +559,20 @@ indicates which records refer to each other.</p>
     <span class="k">for</span> <span class="n">record_id</span> <span class="ow">in</span> <span class="n">cluster</span><span class="p">:</span>
         <span class="n">cluster_membership</span><span class="p">[</span><span class="n">record_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">cluster_id</span>
 
-<span class="n">f_input</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">input_file</span><span class="p">)</span>
-<span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">f_input</span><span class="p">)</span>
-<span class="n">reader</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">input_file</span><span class="p">)</span> <span class="k">as</span> <span class="n">f_input</span> <span class="p">:</span>
+    <span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">f_input</span><span class="p">)</span>
+    <span class="n">reader</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
 
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_file</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-    <span class="n">heading_row</span> <span class="o">=</span> <span class="n">header</span>
-    <span class="n">heading_row</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s">&#39;Cluster ID&#39;</span><span class="p">)</span>
-    <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">heading_row</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_file</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">heading_row</span> <span class="o">=</span> <span class="n">header</span>
+        <span class="n">heading_row</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s">&#39;Cluster ID&#39;</span><span class="p">)</span>
+        <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">heading_row</span><span class="p">)</span>
 
-    <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">row</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">reader</span><span class="p">):</span>
-        <span class="n">cluster_id</span> <span class="o">=</span> <span class="n">cluster_membership</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-        <span class="n">row</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">cluster_id</span><span class="p">)</span>
-        <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
-
-<span class="n">f_input</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">row</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">reader</span><span class="p">):</span>
+            <span class="n">cluster_id</span> <span class="o">=</span> <span class="n">cluster_membership</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">row</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">cluster_id</span><span class="p">)</span>
+            <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
 
 </pre></div>
     </div>
