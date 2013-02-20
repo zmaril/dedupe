@@ -525,7 +525,9 @@ believes are all referring to the same entity.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="k">print</span> <span class="s">&#39;clustering...&#39;</span>
-<span class="n">clustered_dupes</span> <span class="o">=</span> <span class="n">deduper</span><span class="o">.</span><span class="n">duplicateClusters</span><span class="p">(</span><span class="n">blocked_data</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span></pre></div>
+<span class="n">clustered_dupes</span> <span class="o">=</span> <span class="n">deduper</span><span class="o">.</span><span class="n">duplicateClusters</span><span class="p">(</span><span class="n">blocked_data</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&#39;# duplicate sets&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">clustered_dupes</span><span class="p">)</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -551,10 +553,7 @@ data back out to a CSV with a new column called 'Cluster ID' which
 indicates which records refer to each other.</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="k">print</span> <span class="s">&#39;# duplicate sets&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">clustered_dupes</span><span class="p">)</span>
-<span class="n">orig_data</span> <span class="o">=</span> <span class="p">{}</span>
-
-<span class="n">cluster_membership</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span> <span class="p">:</span> <span class="s">&#39;x&#39;</span><span class="p">)</span>
+      <div class="highlight"><pre><span class="n">cluster_membership</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span> <span class="p">:</span> <span class="s">&#39;x&#39;</span><span class="p">)</span>
 <span class="k">for</span> <span class="p">(</span><span class="n">cluster_id</span><span class="p">,</span> <span class="n">cluster</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">clustered_dupes</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">record_id</span> <span class="ow">in</span> <span class="n">cluster</span><span class="p">:</span>
         <span class="n">cluster_membership</span><span class="p">[</span><span class="n">record_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">cluster_id</span>
