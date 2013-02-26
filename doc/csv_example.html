@@ -6,8 +6,8 @@
   <link rel="stylesheet" href="pycco.css">
 </head>
 <body>
+<div id="background"></div>
 <div id='container'>
-  <div id="background"></div>
   <div class='section'>
     <div class='docs'><h1>csv_example.py</h1></div>
   </div>
@@ -17,26 +17,14 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-0'>#</a>
       </div>
-      <p>This code demonstrates how to use dedupe with a comma separated values (CSV)
-file. All operations are performed in memory, so will run very quickly on datasets
-up to ~10,000 rows.</p>
-<p>We start with a CSV file containing our messy data. In this example, it is
-listings of early childhood education centers in Chicago compiled
-from several different sources. </p>
+      <p>This code demonstrates how to use dedupe with a comma separated values
+(CSV) file. All operations are performed in memory, so will run very
+quickly on datasets up to ~10,000 rows.</p>
+<p>We start with a CSV file containing our messy data. In this example,
+it is listings of early childhood education centers in Chicago
+compiled from several different sources.</p>
 <p>The output will be a CSV with our clustered results.</p>
 <p>For larger datasets, see our <a href="http://open-city.github.com/dedupe/doc/mysql_example.html">mysql_example</a></p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-1'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-1'>#</a>
-      </div>
-      
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="kn">import</span> <span class="nn">os</span>
@@ -52,10 +40,10 @@ from several different sources. </p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-2'>
+  <div class='section' id='section-1'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-2'>#</a>
+        <a class='octothorpe' href='#section-1'>#</a>
       </div>
       <h2>Logging</h2>
     </div>
@@ -64,10 +52,10 @@ from several different sources. </p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-3'>
+  <div class='section' id='section-2'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-3'>#</a>
+        <a class='octothorpe' href='#section-2'>#</a>
       </div>
       <p>Dedupe uses Python logging to show or suppress verbose output. Added for convenience.
 To enable verbose logging, run <code>python examples/csv_example/csv_example.py -v</code></p>
@@ -87,10 +75,10 @@ To enable verbose logging, run <code>python examples/csv_example/csv_example.py 
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-4'>
+  <div class='section' id='section-3'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-4'>#</a>
+        <a class='octothorpe' href='#section-3'>#</a>
       </div>
       <h2>Setup</h2>
     </div>
@@ -99,10 +87,10 @@ To enable verbose logging, run <code>python examples/csv_example/csv_example.py 
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-5'>
+  <div class='section' id='section-4'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-5'>#</a>
+        <a class='octothorpe' href='#section-4'>#</a>
       </div>
       <p>Switch to our working directory and set up our input and out put paths,
 as well as our settings and training file locations</p>
@@ -116,10 +104,10 @@ as well as our settings and training file locations</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-6'>
+  <div class='section' id='section-5'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-6'>#</a>
+        <a class='octothorpe' href='#section-5'>#</a>
       </div>
       <p>Do a little bit of data cleaning with the help of <a href="https://github.com/tnajdek/ASCII--Dammit">AsciiDammit</a> 
 and Regex. Things like casing, extra spaces, quotes and new lines can be ignored.</p>
@@ -129,10 +117,10 @@ and Regex. Things like casing, extra spaces, quotes and new lines can be ignored
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-7'>
+  <div class='section' id='section-6'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-7'>#</a>
+        <a class='octothorpe' href='#section-6'>#</a>
       </div>
       
     </div>
@@ -145,10 +133,10 @@ and Regex. Things like casing, extra spaces, quotes and new lines can be ignored
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-8'>
+  <div class='section' id='section-7'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-8'>#</a>
+        <a class='octothorpe' href='#section-7'>#</a>
       </div>
       <p>Read in our data from a CSV file and create a dictionary of records, 
 where the key is a unique record ID and each value is a 
@@ -163,10 +151,10 @@ with no integers skipped. The smallest valued unique id must be 0 or
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-9'>
+  <div class='section' id='section-8'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-9'>#</a>
+        <a class='octothorpe' href='#section-8'>#</a>
       </div>
       
     </div>
@@ -187,10 +175,10 @@ with no integers skipped. The smallest valued unique id must be 0 or
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-10'>
+  <div class='section' id='section-9'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-10'>#</a>
+        <a class='octothorpe' href='#section-9'>#</a>
       </div>
       <h2>Training</h2>
     </div>
@@ -203,10 +191,10 @@ with no integers skipped. The smallest valued unique id must be 0 or
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-11'>
+  <div class='section' id='section-10'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-11'>#</a>
+        <a class='octothorpe' href='#section-10'>#</a>
       </div>
       <p>To train dedupe, we feed it a random sample of records.</p>
     </div>
@@ -215,10 +203,10 @@ with no integers skipped. The smallest valued unique id must be 0 or
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-12'>
+  <div class='section' id='section-11'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-12'>#</a>
+        <a class='octothorpe' href='#section-11'>#</a>
       </div>
       <p>Define the fields dedupe will pay attention to</p>
     </div>
@@ -232,10 +220,10 @@ with no integers skipped. The smallest valued unique id must be 0 or
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-13'>
+  <div class='section' id='section-12'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-13'>#</a>
+        <a class='octothorpe' href='#section-12'>#</a>
       </div>
       <p>Create a new deduper object and pass our data model to it.</p>
     </div>
@@ -244,10 +232,10 @@ with no integers skipped. The smallest valued unique id must be 0 or
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-14'>
+  <div class='section' id='section-13'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-14'>#</a>
+        <a class='octothorpe' href='#section-13'>#</a>
       </div>
       <p>If we have training data saved from a previous run of dedupe,
 look for it an load it in.
@@ -260,12 +248,26 @@ look for it an load it in.
     </div>
   </div>
   <div class='clearall'></div>
+  <div class='section' id='section-14'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-14'>#</a>
+      </div>
+      <h2>Active learning</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
   <div class='section' id='section-15'>
     <div class='docs'>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-15'>#</a>
       </div>
-      <h2>Active learning</h2>
+      <p>Starts the trainin loop. Dedupe will find the next pair of records
+it is least certain about and ask you to label them as duplicates
+or not.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>
@@ -277,20 +279,6 @@ look for it an load it in.
       <div class='octowrap'>
         <a class='octothorpe' href='#section-16'>#</a>
       </div>
-      <p>Starts the trainin loop. Dedupe will find the next pair of records
-it is least certain about and ask you to label them as duplicates
-or not.</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-17'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-17'>#</a>
-      </div>
       <p>use 'y', 'n' and 'u' keys to flag duplicates
 press 'f' when you are finished</p>
     </div>
@@ -300,10 +288,10 @@ press 'f' when you are finished</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-18'>
+  <div class='section' id='section-17'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-18'>#</a>
+        <a class='octothorpe' href='#section-17'>#</a>
       </div>
       <p>When finished, save our training away to disk</p>
     </div>
@@ -312,10 +300,10 @@ press 'f' when you are finished</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-19'>
+  <div class='section' id='section-18'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-19'>#</a>
+        <a class='octothorpe' href='#section-18'>#</a>
       </div>
       <h2>Blocking</h2>
     </div>
@@ -324,10 +312,10 @@ press 'f' when you are finished</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-20'>
+  <div class='section' id='section-19'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-20'>#</a>
+        <a class='octothorpe' href='#section-19'>#</a>
       </div>
       <p>Initialize our blocker, which determines our field weights and blocking 
 predicates based on our training data</p>
@@ -337,10 +325,10 @@ predicates based on our training data</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-21'>
+  <div class='section' id='section-20'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-21'>#</a>
+        <a class='octothorpe' href='#section-20'>#</a>
       </div>
       <p>Save our weights and predicates to disk.
 If the settings file exists, we will skip all the training and learning</p>
@@ -350,10 +338,10 @@ If the settings file exists, we will skip all the training and learning</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-22'>
+  <div class='section' id='section-21'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-22'>#</a>
+        <a class='octothorpe' href='#section-21'>#</a>
       </div>
       <p>Load all the original data in to memory and place
 them in to blocks. Each record can be blocked in many ways, so for
@@ -364,10 +352,10 @@ larger data, memory will be a limiting factor.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-23'>
+  <div class='section' id='section-22'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-23'>#</a>
+        <a class='octothorpe' href='#section-22'>#</a>
       </div>
       <p>Satore all of our blocked data in to memory</p>
     </div>
@@ -376,10 +364,10 @@ larger data, memory will be a limiting factor.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-24'>
+  <div class='section' id='section-23'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-24'>#</a>
+        <a class='octothorpe' href='#section-23'>#</a>
       </div>
       <h2>Clustering</h2>
     </div>
@@ -388,10 +376,10 @@ larger data, memory will be a limiting factor.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-25'>
+  <div class='section' id='section-24'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-25'>#</a>
+        <a class='octothorpe' href='#section-24'>#</a>
       </div>
       <p>Find the threshold that will maximize a weighted average of our precision and recall. 
 When we set the recall weight to 2, we are saying we care twice as much
@@ -404,10 +392,10 @@ this function but a representative sample.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-26'>
+  <div class='section' id='section-25'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-26'>#</a>
+        <a class='octothorpe' href='#section-25'>#</a>
       </div>
       <p><code>duplicateClusters</code> will return sets of record IDs that dedupe
 believes are all referring to the same entity.</p>
@@ -420,10 +408,10 @@ believes are all referring to the same entity.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-27'>
+  <div class='section' id='section-26'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-27'>#</a>
+        <a class='octothorpe' href='#section-26'>#</a>
       </div>
       <h2>Writing Results</h2>
     </div>
@@ -432,10 +420,10 @@ believes are all referring to the same entity.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-28'>
+  <div class='section' id='section-27'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-28'>#</a>
+        <a class='octothorpe' href='#section-27'>#</a>
       </div>
       <p>Write our original data back out to a CSV with a new column called 
 'Cluster ID' which indicates which records refer to each other.</p>
