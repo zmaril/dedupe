@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>mysql_init_db.py</title>
+  <link rel="stylesheet" href="pycco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><h1>mysql_init_db.py</h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      <p>This is a setup script for mysql_example.
+It downloads a zip file of Illinois campaign contributions and loads them in to a MySQL
+database named 'contributions'.</p>
+<p><strong>Note:</strong> You will need to run this script first before execuing
+<a href="http://open-city.github.com/dedupe/doc/mysql_example.html">mysql_example.py</a>.</p>
+<p>Tables created:
+<em> raw_table - raw import of entire CSV file
+</em> donors - all distinct donors based on name and address
+<em> recipients - all distinct campaign contribution recipients
+</em> contributions - contribution amounts tied to donor and recipients tables</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">urllib2</span>
+<span class="kn">import</span> <span class="nn">zipfile</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">import</span> <span class="nn">MySQLdb</span>
+
+<span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <p>Switch to our working directory</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s">&#39;./examples/mysql_example/&#39;</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      <p>Download Illinois-campaign-contributions.txt.zip from S3</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">contributions_zip_file</span> <span class="o">=</span> <span class="s">&#39;Illinois-campaign-contributions.txt.zip&#39;</span>
+<span class="n">contributions_txt_file</span> <span class="o">=</span> <span class="s">&#39;Illinois-campaign-contributions.txt&#39;</span>
+
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">contributions_zip_file</span><span class="p">)</span> <span class="p">:</span>
+  <span class="k">print</span> <span class="s">&#39;downloading&#39;</span><span class="p">,</span> <span class="n">contributions_zip_file</span><span class="p">,</span> <span class="s">&#39;(~60mb) ...&#39;</span>
+  <span class="n">u</span> <span class="o">=</span> <span class="n">urllib2</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="s">&#39;https://s3.amazonaws.com/dedupe-data/Illinois-campaign-contributions.txt.zip&#39;</span><span class="p">)</span>
+  <span class="n">localFile</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">contributions_zip_file</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span>
+  <span class="n">localFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+  <span class="n">localFile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      <p>Extract the zip file</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">contributions_txt_file</span><span class="p">)</span> <span class="p">:</span>
+  <span class="n">zip_file</span> <span class="o">=</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">contributions_zip_file</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span>
+  <span class="k">print</span> <span class="s">&#39;extracting </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">contributions_zip_file</span>
+  <span class="n">zip_file_contents</span> <span class="o">=</span> <span class="n">zip_file</span><span class="o">.</span><span class="n">namelist</span><span class="p">()</span>
+  <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">zip_file_contents</span><span class="p">:</span>
+    <span class="k">if</span> <span class="p">(</span><span class="s">&#39;.txt&#39;</span> <span class="ow">in</span> <span class="n">f</span><span class="p">):</span>
+      <span class="n">zip_file</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+  <span class="n">zip_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-4'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-4'>#</a>
+      </div>
+      <p>Create our database connection
+<code>local_infile</code> permission is required for inserting from a CSV file</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">conn</span> <span class="o">=</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">read_default_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;/mysql.cnf&#39;</span><span class="p">,</span> 
+                       <span class="n">local_infile</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+                       <span class="n">db</span><span class="o">=</span><span class="s">&#39;contributions&#39;</span><span class="p">)</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+
+<span class="k">print</span> <span class="s">&#39;importing raw data from csv...&#39;</span>
+<span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;DROP TABLE IF EXISTS raw_table&quot;</span><span class="p">)</span>
+<span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;DROP TABLE IF EXISTS donors&quot;</span><span class="p">)</span>
+<span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;DROP TABLE IF EXISTS recipients&quot;</span><span class="p">)</span>
+<span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;DROP TABLE IF EXISTS contributions&quot;</span><span class="p">)</span>
+
+
+<span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;CREATE TABLE raw_table &quot;</span>
+          <span class="s">&quot;(reciept_id INT, last_name varchar(70), first_name varchar(35), &quot;</span>
+          <span class="s">&quot; address_1 varchar(35), address_2 varchar(36), city varchar(20), state varchar(15), &quot;</span>
+          <span class="s">&quot; zip varchar(11), report_type TEXT, date_recieved TEXT, &quot;</span>
+          <span class="s">&quot; loan_amount TEXT, amount TEXT, receipt_type TEXT, &quot;</span>
+          <span class="s">&quot; employer TEXT, occupation TEXT, vendor_last_name TEXT, &quot;</span>
+          <span class="s">&quot; vendor_first_name TEXT, vendor_address_1 TEXT, &quot;</span>
+          <span class="s">&quot; vendor_address_2 TEXT, vendor_city TEXT, vendor_state TEXT, &quot;</span>
+          <span class="s">&quot; vendor_zip TEXT, description TEXT, election_type TEXT, &quot;</span>
+          <span class="s">&quot; election_year TEXT, &quot;</span>
+          <span class="s">&quot; report_period_begin TEXT, report_period_end TEXT, &quot;</span>
+          <span class="s">&quot; committee_name TEXT, committee_id TEXT)&quot;</span><span class="p">)</span>
+
+
+<span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-5'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-5'>#</a>
+      </div>
+      <p>Load in our data directly from the CSV file</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;LOAD DATA LOCAL INFILE </span><span class="si">%s</span><span class="s"> INTO TABLE raw_table &quot;</span>
+          <span class="s">&quot;FIELDS TERMINATED BY &#39;</span><span class="se">\t</span><span class="s">&#39; LINES TERMINATED BY &#39;</span><span class="se">\r\n</span><span class="s">&#39; &quot;</span> 
+          <span class="s">&quot;IGNORE 1 LINES &quot;</span>
+          <span class="s">&quot;(reciept_id, last_name, first_name, &quot;</span>
+          <span class="s">&quot; address_1, address_2, city, state, &quot;</span>
+          <span class="s">&quot; zip, report_type, date_recieved, &quot;</span>
+          <span class="s">&quot; loan_amount, amount, receipt_type, &quot;</span>
+          <span class="s">&quot; employer, occupation, vendor_last_name, &quot;</span>
+          <span class="s">&quot; vendor_first_name, vendor_address_1, &quot;</span>
+          <span class="s">&quot; vendor_address_2, vendor_city, vendor_state, &quot;</span>
+          <span class="s">&quot; vendor_zip, description, election_type, &quot;</span>
+          <span class="s">&quot; election_year, &quot;</span>
+          <span class="s">&quot; report_period_begin, report_period_end, &quot;</span>
+          <span class="s">&quot; committee_name, committee_id, @dummy)&quot;</span><span class="p">,</span>
+          <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;/&#39;</span> <span class="o">+</span> <span class="n">contributions_txt_file</span><span class="p">))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-6'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-6'>#</a>
+      </div>
+      <p>Create our indexes. This is necessary for populating our contribution table</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">print</span> <span class="s">&#39;creating raw_table indexes...&#39;</span>
+<span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;ALTER TABLE raw_table ADD PRIMARY KEY(reciept_id)&quot;</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-7'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-7'>#</a>
+      </div>
+      <p>c.execute("CREATE INDEX raw_table_name_address_idx on raw_table (first_name, last_name, address_1, address_2, city, state, zip)")</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-8'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-8'>#</a>
+      </div>
+      <p>Find all distinct donors based on name and address and insert into donors</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">print</span> <span class="s">&#39;creating donors table...&#39;</span>
+<span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;CREATE TABLE donors &quot;</span>
+          <span class="s">&quot;(donor_id INTEGER PRIMARY KEY AUTO_INCREMENT, last_name varchar(70), first_name varchar(35), &quot;</span>
+          <span class="s">&quot; address_1 varchar(35), address_2 varchar(36), city varchar(20), state varchar(15), &quot;</span>
+          <span class="s">&quot; zip varchar(11))&quot;</span><span class="p">)</span>
+<span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;INSERT INTO donors &quot;</span>
+          <span class="s">&quot;(first_name, last_name, address_1,&quot;</span>
+          <span class="s">&quot; address_2, city, state, zip) &quot;</span>
+          <span class="s">&quot;SELECT DISTINCT &quot;</span>
+          <span class="s">&quot;first_name, last_name, address_1, &quot;</span>
+          <span class="s">&quot;address_2, city, state, zip &quot;</span>
+          <span class="s">&quot;FROM raw_table&quot;</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&#39;creating donors indexes...&#39;</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-9'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-9'>#</a>
+      </div>
+      <p>c.execute("CREATE INDEX donors_name_address_idx on donors (first_name, last_name, address_1, address_2, city, state, zip)")</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-10'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-10'>#</a>
+      </div>
+      <p>Find all distinct recipients based on committee and insert into recipients</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">print</span> <span class="s">&#39;creating recipients table...&#39;</span>
+<span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;CREATE TABLE recipients &quot;</span>
+          <span class="s">&quot;(recipient_id INTEGER PRIMARY KEY AUTO_INCREMENT, name TEXT)&quot;</span><span class="p">)</span>
+
+<span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;INSERT IGNORE INTO recipients &quot;</span>
+          <span class="s">&quot;SELECT DISTINCT committee_id, committee_name FROM raw_table&quot;</span><span class="p">)</span>
+<span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+<span class="k">print</span> <span class="s">&#39;creating contributions table&#39;</span>
+<span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&#39;CREATE TABLE contributions &#39;</span>
+          <span class="s">&#39;(contribution_id INT, donor_id INT, recipient_id INT, &#39;</span>
+          <span class="s">&#39; report_type TEXT, date_recieved TEXT, loan_amount TEXT, &#39;</span>
+          <span class="s">&#39; amount TEXT, receipt_type TEXT, employer TEXT, &#39;</span>
+          <span class="s">&#39; occupation TEXT, vendor_last_name TEXT, &#39;</span>
+          <span class="s">&#39; vendor_first_name TEXT, vendor_address_1 TEXT, &#39;</span>
+          <span class="s">&#39; vendor_address_2 TEXT, vendor_city TEXT, vendor_state TEXT, &#39;</span>
+          <span class="s">&#39; vendor_zip TEXT, description TEXT, election_type TEXT, &#39;</span>
+          <span class="s">&#39; election_year TEXT, report_period_begin TEXT, &#39;</span>
+          <span class="s">&#39; report_period_end TEXT)&#39;</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-11'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-11'>#</a>
+      </div>
+      <p>c.execute('INSERT INTO contributions '
+'SELECT reciept_id, donors.donor_id, committee_id, '
+' report_type, date_recieved, loan_amount, amount, '
+' receipt_type, employer, occupation, vendor_last_name , '
+' vendor_first_name, vendor_address_1, vendor_address_2, '
+' vendor_city, vendor_state, vendor_zip, description, '
+' election_type, election_year, report_period_begin, '
+' report_period_end '
+'FROM raw_table JOIN donors ON '
+'CONCAT(donors.first_name, donors.last_name'
+       'donors.address_1, donors.address_2,'
+       'donors.city, donors.state, donors.zip) ='
+'CONCAT(raw_table.first_name, raw_table.last_name'
+       'raw_table.address_1, raw_table.address_2,'
+       'raw_table.city, raw_table.state, raw_table.zip)')</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-12'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-12'>#</a>
+      </div>
+      <p>c.execute("ALTER TABLE contributions ADD PRIMARY KEY(contribution_id)")
+c.execute("CREATE INDEX donor_idx ON contributions (donor_id)")
+c.execute("CREATE INDEX recipient_idx ON contributions (recipient_id)")</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-13'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-13'>#</a>
+      </div>
+      <p>conn.commit()</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">c</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="k">print</span> <span class="s">&#39;done&#39;</span>
+
+<span class="k">print</span> <span class="s">&#39;ran in&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">,</span> <span class="s">&#39;seconds&#39;</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>
