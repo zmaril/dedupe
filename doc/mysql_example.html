@@ -135,8 +135,8 @@ database is much faster than in Python).</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-6'>#</a>
       </div>
-      <p>dedupe expects the id column to contain unique, sequential integers
-starting at 0 or 1</p>
+      <p>Dedupe expects the id column to contain unique, sequential
+integers starting at 0 or 1</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre>    <span class="n">random_pairs</span> <span class="o">=</span> <span class="n">dedupe</span><span class="o">.</span><span class="n">randomPairs</span><span class="p">(</span><span class="n">num_records</span><span class="p">,</span>
@@ -145,7 +145,7 @@ starting at 0 or 1</p>
 
     <span class="n">temp_d</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">DONOR_SELECT</span><span class="p">)</span> 
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">DONOR_SELECT</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span> <span class="p">:</span>
         <span class="n">temp_d</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">id_column</span><span class="p">])]</span> <span class="o">=</span> <span class="n">dedupe</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frozendict</span><span class="p">(</span><span class="n">row</span><span class="p">)</span></pre></div>
     </div>
@@ -681,19 +681,7 @@ of the data</p>
 <p>For example, let's see who the top 10 donors are.</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-41'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-41'>#</a>
-      </div>
-      <p>for pretty printing numbers</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre><span class="n">locale</span><span class="o">.</span><span class="n">setlocale</span><span class="p">(</span><span class="n">locale</span><span class="o">.</span><span class="n">LC_ALL</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+      <div class="highlight"><pre><span class="n">locale</span><span class="o">.</span><span class="n">setlocale</span><span class="p">(</span><span class="n">locale</span><span class="o">.</span><span class="n">LC_ALL</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span> <span class="c"># for pretty printing numbers</span>
 
 <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;SELECT donors.first_name AS first_name, &quot;</span>
           <span class="s">&quot;       donors.last_name AS last_name, &quot;</span>
@@ -715,10 +703,10 @@ of the data</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-42'>
+  <div class='section' id='section-41'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-42'>#</a>
+        <a class='octothorpe' href='#section-41'>#</a>
       </div>
       <p>Compare this to what we would have gotten if we hadn't done any
 deduplication</p>
@@ -740,10 +728,10 @@ deduplication</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-43'>
+  <div class='section' id='section-42'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-43'>#</a>
+        <a class='octothorpe' href='#section-42'>#</a>
       </div>
       <p>Close our database connection</p>
     </div>
