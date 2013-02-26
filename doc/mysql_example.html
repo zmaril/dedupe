@@ -54,6 +54,24 @@ cannot possibly store all the comparison pairs we will make.</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-1'>#</a>
       </div>
+      <p>When we compare records, we don't care about differences in case.
+Lowering the case in SQL is much faster than in Python.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">DONOR_SELECT</span> <span class="o">=</span> <span class="s">&quot;SELECT donor_id, LOWER(city) AS city, &quot;</span> \
+               <span class="s">&quot;LOWER(first_name) AS first_name, &quot;</span> \
+               <span class="s">&quot;LOWER(last_name) AS last_name, &quot;</span> \
+               <span class="s">&quot;LOWER(zip) AS zip, LOWER(state) AS state, &quot;</span> \
+               <span class="s">&quot;LOWER(address_1) AS address_1, &quot;</span> \
+               <span class="s">&quot;LOWER(address_2) AS address_2 FROM donors&quot;</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
       <p>Returns a random sample of pairs of donors of a given size from a MySQL table.
 Depending on your database engine, you will need to come up with a similar function.</p>
 <p>id_column must contain unique, sequential itegers starting at 0 or 1</p>
@@ -63,10 +81,10 @@ Depending on your database engine, you will need to come up with a similar funct
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-2'>
+  <div class='section' id='section-3'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-2'>#</a>
+        <a class='octothorpe' href='#section-3'>#</a>
       </div>
       
     </div>
@@ -78,16 +96,16 @@ Depending on your database engine, you will need to come up with a similar funct
 
   <span class="n">temp_d</span> <span class="o">=</span> <span class="p">{}</span>
 
-  <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">donor_select</span><span class="p">)</span> 
+  <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">DONOR_SELECT</span><span class="p">)</span> 
   <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span> <span class="p">:</span>
     <span class="n">temp_d</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">id_column</span><span class="p">])]</span> <span class="o">=</span> <span class="n">dedupe</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frozendict</span><span class="p">(</span><span class="n">row</span><span class="p">)</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-3'>
+  <div class='section' id='section-4'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-3'>#</a>
+        <a class='octothorpe' href='#section-4'>#</a>
       </div>
       
     </div>
@@ -109,10 +127,10 @@ Depending on your database engine, you will need to come up with a similar funct
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-4'>
+  <div class='section' id='section-5'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-4'>#</a>
+        <a class='octothorpe' href='#section-5'>#</a>
       </div>
       <p>You'll need to copy <code>examples/mysql_example/mysql.cnf_LOCAL</code> to
 <code>examples/mysql_example/mysql.cnf</code> and fill in your mysql
@@ -135,10 +153,10 @@ database information examples/mysql_example/mysql.cnf</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-5'>
+  <div class='section' id='section-6'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-5'>#</a>
+        <a class='octothorpe' href='#section-6'>#</a>
       </div>
       <p>As the dataset grows, duplicate pairs become more rare. 
 We need positive examples to train dedupe, so we have to
@@ -150,10 +168,10 @@ signficantly increase the size of the sample compared to <code>csv_example.py</c
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-6'>
+  <div class='section' id='section-7'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-6'>#</a>
+        <a class='octothorpe' href='#section-7'>#</a>
       </div>
       <p>Define the fields dedupe will pay attention to</p>
     </div>
@@ -170,10 +188,10 @@ signficantly increase the size of the sample compared to <code>csv_example.py</c
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-7'>
+  <div class='section' id='section-8'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-7'>#</a>
+        <a class='octothorpe' href='#section-8'>#</a>
       </div>
       <p>Sometimes we will want to add additional labeled examples to a
 training file. To do this can just load the existing labeled
@@ -189,10 +207,10 @@ pairs...</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-8'>
+  <div class='section' id='section-9'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-8'>#</a>
+        <a class='octothorpe' href='#section-9'>#</a>
       </div>
       <p>... and then call training with our interactive function</p>
     </div>
@@ -206,10 +224,10 @@ pairs...</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-9'>
+  <div class='section' id='section-10'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-9'>#</a>
+        <a class='octothorpe' href='#section-10'>#</a>
       </div>
       <p>So the learning is done and we have our blocker. However we cannot
 block the data in memory. We have to pass through all the data and
@@ -220,10 +238,10 @@ create a blocking map table.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-10'>
+  <div class='section' id='section-11'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-10'>#</a>
+        <a class='octothorpe' href='#section-11'>#</a>
       </div>
       <p>To run blocking on such a large set of data, we create a separate table
 that contains blocking keys and record ids</p>
@@ -236,42 +254,19 @@ that contains blocking keys and record ids</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-11'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-11'>#</a>
-      </div>
-      <p>First though, if we learned a tf-idf predicate, we have to create an
-tfIDF blocks for the full data set.</p>
-<p>When we compare records, we don't care about differences in case.
-Lowering the case in SQL is much faster than in Python.</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre><span class="n">donor_select</span> <span class="o">=</span> <span class="s">&quot;SELECT donor_id, LOWER(city) AS city, &quot;</span> \
-               <span class="s">&quot;LOWER(first_name) AS first_name, &quot;</span> \
-               <span class="s">&quot;LOWER(last_name) AS last_name, &quot;</span> \
-               <span class="s">&quot;LOWER(zip) AS zip, LOWER(state) AS state, &quot;</span> \
-               <span class="s">&quot;LOWER(address_1) AS address_1, &quot;</span> \
-               <span class="s">&quot;LOWER(address_2) AS address_2 FROM donors&quot;</span>
-
-<span class="k">print</span> <span class="s">&#39;creating inverted index&#39;</span>
-<span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">donor_select</span> <span class="o">+</span> <span class="s">&quot; LIMIT 10000&quot;</span><span class="p">)</span>
-<span class="n">full_data</span> <span class="o">=</span> <span class="p">((</span><span class="n">row</span><span class="p">[</span><span class="s">&#39;donor_id&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">fetchall</span><span class="p">())</span>
-<span class="n">blocker</span><span class="o">.</span><span class="n">tfIdfBlocks</span><span class="p">(</span><span class="n">full_data</span><span class="p">)</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
   <div class='section' id='section-12'>
     <div class='docs'>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-12'>#</a>
       </div>
-      <p>Finally, we are ready to block the data. We'll do this by creating
-a generator that yields a (block_key, donor_id) tuples. Dedupe guarantees
-that these tuples will be unique</p>
+      <p>First though, if we learned a tf-idf predicate, we have to create an
+tfIDF blocks for the full data set.</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="k">print</span> <span class="s">&#39;writing blocking map&#39;</span></pre></div>
+      <div class="highlight"><pre><span class="k">print</span> <span class="s">&#39;creating inverted index&#39;</span>
+<span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">DONOR_SELECT</span> <span class="o">+</span> <span class="s">&quot; LIMIT 10000&quot;</span><span class="p">)</span>
+<span class="n">full_data</span> <span class="o">=</span> <span class="p">((</span><span class="n">row</span><span class="p">[</span><span class="s">&#39;donor_id&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">fetchall</span><span class="p">())</span>
+<span class="n">blocker</span><span class="o">.</span><span class="n">tfIdfBlocks</span><span class="p">(</span><span class="n">full_data</span><span class="p">)</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -280,11 +275,25 @@ that these tuples will be unique</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-13'>#</a>
       </div>
+      <p>Finally, we are ready to block the data. We'll do this by creating
+a generator that yields <code>(block_key, donor_id)</code> tuples. Dedupe guarantees
+that these tuples will be unique</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">print</span> <span class="s">&#39;writing blocking map&#39;</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-14'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-14'>#</a>
+      </div>
       
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="k">def</span> <span class="nf">block_data</span><span class="p">()</span> <span class="p">:</span>
-    <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">donor_select</span> <span class="o">+</span> <span class="s">&quot; LIMIT 10000&quot;</span><span class="p">)</span>
+    <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">DONOR_SELECT</span> <span class="o">+</span> <span class="s">&quot; LIMIT 10000&quot;</span><span class="p">)</span>
     <span class="n">full_data</span> <span class="o">=</span> <span class="p">((</span><span class="n">row</span><span class="p">[</span><span class="s">&#39;donor_id&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">fetchall</span><span class="p">())</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">donor_id</span><span class="p">,</span> <span class="n">record</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">full_data</span><span class="p">)</span> <span class="p">:</span>
         <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">10000</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">:</span>
@@ -296,10 +305,10 @@ that these tuples will be unique</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-14'>
+  <div class='section' id='section-15'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-14'>#</a>
+        <a class='octothorpe' href='#section-15'>#</a>
       </div>
       <p>MySQL, by default, has a hard limit on the size of a data object 
 that can be passed to it. To get around this, we chunk the blocked data
@@ -313,10 +322,10 @@ in to groups of 10,000 blocks</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-15'>
+  <div class='section' id='section-16'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-15'>#</a>
+        <a class='octothorpe' href='#section-16'>#</a>
       </div>
       <p>This takes the generator and writes into into our table</p>
     </div>
@@ -330,13 +339,13 @@ in to groups of 10,000 blocks</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-16'>
+  <div class='section' id='section-17'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-16'>#</a>
+        <a class='octothorpe' href='#section-17'>#</a>
       </div>
-      <p>We create an index on the blocking_key so that the group by
-queries we will be making to cluster the data can  happen in a
+      <p>We create an index on the blocking key so that the 'group by
+queries' we will be making to cluster the data can  happen in a
 reasonable time</p>
     </div>
     <div class='code'>
@@ -346,25 +355,25 @@ reasonable time</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-17'>
+  <div class='section' id='section-18'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-17'>#</a>
+        <a class='octothorpe' href='#section-18'>#</a>
       </div>
       <p>This grabs a block of records for comparison. We rely on the
 ordering of the donor_ids</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="n">block_select</span> <span class="o">=</span> <span class="p">(</span><span class="n">donor_select</span> <span class="o">+</span> 
+      <div class="highlight"><pre><span class="n">block_select</span> <span class="o">=</span> <span class="p">(</span><span class="n">DONOR_SELECT</span> <span class="o">+</span> 
                 <span class="s">&quot; INNER JOIN blocking_map USING (donor_id) &quot;</span> 
                 <span class="s">&quot;WHERE block_key = </span><span class="si">%s</span><span class="s"> ORDER BY donor_id&quot;</span><span class="p">)</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-18'>
+  <div class='section' id='section-19'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-18'>#</a>
+        <a class='octothorpe' href='#section-19'>#</a>
       </div>
       <p>This generator yields blocks of data</p>
     </div>
@@ -380,10 +389,10 @@ ordering of the donor_ids</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-19'>
+  <div class='section' id='section-20'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-19'>#</a>
+        <a class='octothorpe' href='#section-20'>#</a>
       </div>
       <p>We grab all the block_keys with more than one record associated with
 it. These associated records will make up a block of records we will
@@ -395,10 +404,10 @@ compare within.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-20'>
+  <div class='section' id='section-21'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-20'>#</a>
+        <a class='octothorpe' href='#section-21'>#</a>
       </div>
       <p>Using a random sample of blocks we find a good threshold</p>
     </div>
@@ -417,12 +426,12 @@ compare within.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-21'>
+  <div class='section' id='section-22'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-21'>#</a>
+        <a class='octothorpe' href='#section-22'>#</a>
       </div>
-      <p>duplicateClusters gives us sequence of tuples of donor_ids that
+      <p><code>duplicateClusters</code> gives us sequence of tuples of donor_ids that
 Dedupe believes all refer to the same entity. We write this out
 onto an entity map tbale</p>
     </div>
