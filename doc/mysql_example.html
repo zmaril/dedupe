@@ -6,8 +6,8 @@
   <link rel="stylesheet" href="pycco.css">
 </head>
 <body>
-<div id="background"></div>
 <div id='container'>
+  <div id="background"></div>
   <div class='section'>
     <div class='docs'><h1>mysql_example.py</h1></div>
   </div>
@@ -23,8 +23,9 @@ campaign contributions.</p>
 <p>With such a large set of input data, we cannot store all the comparisons 
 we need to make in memory. Instead, we will read the pairs on demand
 from the MySQL database.</p>
-<p><strong>Note:</strong> You will need to run <code>python
-examples/mysql_example/mysql_init_db.py</code> before running this script.</p>
+<p><strong>Note:</strong> You will need to run <code>python examples/mysql_example/mysql_init_db.py</code> 
+before running this script. See the annotates source for 
+<a href="http://open-city.github.com/dedupe/doc/mysql_init_db.html">mysql_init_db</a></p>
 <p>For smaller datasets (&lt;10,000), see our
 <a href="http://open-city.github.com/dedupe/doc/csv_example.html">csv_example</a></p>
     </div>
@@ -190,18 +191,6 @@ file locations</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-9'>#</a>
       </div>
-      <h2>Create a database connection</h2>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-10'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-10'>#</a>
-      </div>
       <p>You'll need to copy <code>examples/mysql_example/mysql.cnf_LOCAL</code> to
 <code>examples/mysql_example/mysql.cnf</code> and fill in your mysql database
 information in <code>examples/mysql_example/mysql.cnf</code></p>
@@ -215,10 +204,10 @@ information in <code>examples/mysql_example/mysql.cnf</code></p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-11'>
+  <div class='section' id='section-10'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-11'>#</a>
+        <a class='octothorpe' href='#section-10'>#</a>
       </div>
       <h2>Training</h2>
     </div>
@@ -230,10 +219,10 @@ information in <code>examples/mysql_example/mysql.cnf</code></p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-12'>
+  <div class='section' id='section-11'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-12'>#</a>
+        <a class='octothorpe' href='#section-11'>#</a>
       </div>
       <p>Select a large sample of duplicate pairs.  As the dataset grows,
 duplicate pairs become relatively more rare so we have to take a
@@ -245,10 +234,10 @@ fairly large sample compared to <code>csv_example.py</code></p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-13'>
+  <div class='section' id='section-12'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-13'>#</a>
+        <a class='octothorpe' href='#section-12'>#</a>
       </div>
       <p>Define the fields dedupe will pay attention to</p>
     </div>
@@ -264,10 +253,10 @@ fairly large sample compared to <code>csv_example.py</code></p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-14'>
+  <div class='section' id='section-13'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-14'>#</a>
+        <a class='octothorpe' href='#section-13'>#</a>
       </div>
       <p>Create a new deduper object and pass our data model to it.</p>
     </div>
@@ -276,10 +265,10 @@ fairly large sample compared to <code>csv_example.py</code></p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-15'>
+  <div class='section' id='section-14'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-15'>#</a>
+        <a class='octothorpe' href='#section-14'>#</a>
       </div>
       <p>If we have training data saved from a previous run of dedupe,
 look for it an load it in.</p>
@@ -293,10 +282,10 @@ scratch, delete the training_file</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-16'>
+  <div class='section' id='section-15'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-16'>#</a>
+        <a class='octothorpe' href='#section-15'>#</a>
       </div>
       <h2>Active learning</h2>
     </div>
@@ -305,10 +294,10 @@ scratch, delete the training_file</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-17'>
+  <div class='section' id='section-16'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-17'>#</a>
+        <a class='octothorpe' href='#section-16'>#</a>
       </div>
       <p>Starts the training loop. Dedupe will find the next pair of records
 it is least certain about and ask you to label them as duplicates
@@ -319,10 +308,10 @@ or not.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-18'>
+  <div class='section' id='section-17'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-18'>#</a>
+        <a class='octothorpe' href='#section-17'>#</a>
       </div>
       <p>use 'y', 'n' and 'u' keys to flag duplicates
 press 'f' when you are finished</p>
@@ -332,10 +321,10 @@ press 'f' when you are finished</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-19'>
+  <div class='section' id='section-18'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-19'>#</a>
+        <a class='octothorpe' href='#section-18'>#</a>
       </div>
       <p>When finished, save our labeled, training pairs to disk</p>
     </div>
@@ -344,10 +333,10 @@ press 'f' when you are finished</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-20'>
+  <div class='section' id='section-19'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-20'>#</a>
+        <a class='octothorpe' href='#section-19'>#</a>
       </div>
       <h2>Blocking</h2>
     </div>
@@ -356,10 +345,10 @@ press 'f' when you are finished</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-21'>
+  <div class='section' id='section-20'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-21'>#</a>
+        <a class='octothorpe' href='#section-20'>#</a>
       </div>
       <p>If we didn't read saved blocking rules from a settings file, then
 we will try to find good blocking rules now. In either case we'll
@@ -370,10 +359,10 @@ initialize our blocker</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-22'>
+  <div class='section' id='section-21'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-22'>#</a>
+        <a class='octothorpe' href='#section-21'>#</a>
       </div>
       <p>Notice our two arguments here</p>
 <p><code>ppc</code> limits the Proportion of Pairs Covered that we allow a
@@ -394,10 +383,10 @@ distinct pairs that we'll have to expensively, compare as well.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-23'>
+  <div class='section' id='section-22'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-23'>#</a>
+        <a class='octothorpe' href='#section-22'>#</a>
       </div>
       <p>Save our weights and predicates to disk.</p>
     </div>
@@ -406,10 +395,10 @@ distinct pairs that we'll have to expensively, compare as well.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-24'>
+  <div class='section' id='section-23'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-24'>#</a>
+        <a class='octothorpe' href='#section-23'>#</a>
       </div>
       <p>To run blocking on such a large set of data, we create a separate table
 that contains blocking keys and record ids</p>
@@ -422,10 +411,10 @@ that contains blocking keys and record ids</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-25'>
+  <div class='section' id='section-24'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-25'>#</a>
+        <a class='octothorpe' href='#section-24'>#</a>
       </div>
       <p>If dedupe learned a TF-IDF blocking rule, we have to take a pass
 through the data and create TF-IDF canopies. This can take up to an
@@ -439,10 +428,10 @@ hour</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-26'>
+  <div class='section' id='section-25'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-26'>#</a>
+        <a class='octothorpe' href='#section-25'>#</a>
       </div>
       <p>Now we are ready to write our blocking map table by creating a
 generator that yields unique <code>(block_key, donor_id)</code> tuples.</p>
@@ -452,10 +441,10 @@ generator that yields unique <code>(block_key, donor_id)</code> tuples.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-27'>
+  <div class='section' id='section-26'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-27'>#</a>
+        <a class='octothorpe' href='#section-26'>#</a>
       </div>
       
     </div>
@@ -473,10 +462,10 @@ generator that yields unique <code>(block_key, donor_id)</code> tuples.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-28'>
+  <div class='section' id='section-27'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-28'>#</a>
+        <a class='octothorpe' href='#section-27'>#</a>
       </div>
       <p>MySQL has a hard limit on the size of a data object that can be passed to it. 
 To get around this, we chunk the blocked data in to groups of 10,000 blocks</p>
@@ -495,10 +484,10 @@ To get around this, we chunk the blocked data in to groups of 10,000 blocks</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-29'>
+  <div class='section' id='section-28'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-29'>#</a>
+        <a class='octothorpe' href='#section-28'>#</a>
       </div>
       <p>Create an index on the blocking key for faster clustering</p>
     </div>
@@ -509,10 +498,10 @@ To get around this, we chunk the blocked data in to groups of 10,000 blocks</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-30'>
+  <div class='section' id='section-29'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-30'>#</a>
+        <a class='octothorpe' href='#section-29'>#</a>
       </div>
       <h2>Clustering</h2>
     </div>
@@ -521,10 +510,10 @@ To get around this, we chunk the blocked data in to groups of 10,000 blocks</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-31'>
+  <div class='section' id='section-30'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-31'>#</a>
+        <a class='octothorpe' href='#section-30'>#</a>
       </div>
       <p>Grabs a block of records for comparison.</p>
     </div>
@@ -535,10 +524,10 @@ To get around this, we chunk the blocked data in to groups of 10,000 blocks</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-32'>
+  <div class='section' id='section-31'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-32'>#</a>
+        <a class='octothorpe' href='#section-31'>#</a>
       </div>
       <p>Generator function that yields records based on blocking map keys</p>
     </div>
@@ -554,10 +543,10 @@ To get around this, we chunk the blocked data in to groups of 10,000 blocks</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-33'>
+  <div class='section' id='section-32'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-33'>#</a>
+        <a class='octothorpe' href='#section-32'>#</a>
       </div>
       <p>Grab all the block keys with more than one record.
 These records will make up a block of records we will cluster.</p>
@@ -570,10 +559,10 @@ These records will make up a block of records we will cluster.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-34'>
+  <div class='section' id='section-33'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-34'>#</a>
+        <a class='octothorpe' href='#section-33'>#</a>
       </div>
       <p>Using a random sample of blocks we find our clustering threshold
 that maximizes the weighted average of our precision and recall</p>
@@ -585,10 +574,10 @@ that maximizes the weighted average of our precision and recall</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-35'>
+  <div class='section' id='section-34'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-35'>#</a>
+        <a class='octothorpe' href='#section-34'>#</a>
       </div>
       <p>With our found threshold, and candidates generator, perform the
 clustering operation</p>
@@ -603,10 +592,10 @@ clustering operation</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-36'>
+  <div class='section' id='section-35'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-36'>#</a>
+        <a class='octothorpe' href='#section-35'>#</a>
       </div>
       <h2>Writing out results</h2>
     </div>
@@ -615,10 +604,10 @@ clustering operation</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-37'>
+  <div class='section' id='section-36'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-37'>#</a>
+        <a class='octothorpe' href='#section-36'>#</a>
       </div>
       <p>We now have a sequence of tuples of donor ids that dedupe believes
 all refer to the same entity. We write this out onto an entity map
@@ -646,10 +635,10 @@ table</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-38'>
+  <div class='section' id='section-37'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-38'>#</a>
+        <a class='octothorpe' href='#section-37'>#</a>
       </div>
       <p>Print out the number of duplicates found</p>
     </div>
@@ -659,10 +648,10 @@ table</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-39'>
+  <div class='section' id='section-38'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-39'>#</a>
+        <a class='octothorpe' href='#section-38'>#</a>
       </div>
       <h2>Payoff</h2>
     </div>
@@ -671,10 +660,10 @@ table</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-40'>
+  <div class='section' id='section-39'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-40'>#</a>
+        <a class='octothorpe' href='#section-39'>#</a>
       </div>
       <p>With all this done, we can now begin to ask interesting questions
 of the data</p>
@@ -703,10 +692,10 @@ of the data</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-41'>
+  <div class='section' id='section-40'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-41'>#</a>
+        <a class='octothorpe' href='#section-40'>#</a>
       </div>
       <p>Compare this to what we would have gotten if we hadn't done any
 deduplication</p>
@@ -728,10 +717,10 @@ deduplication</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-42'>
+  <div class='section' id='section-41'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-42'>#</a>
+        <a class='octothorpe' href='#section-41'>#</a>
       </div>
       <p>Close our database connection</p>
     </div>
