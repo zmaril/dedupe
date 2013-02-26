@@ -72,9 +72,11 @@ Lowering the case in SQL is much faster than in Python.</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-2'>#</a>
       </div>
-      <p>Returns a random sample of pairs of donors of a given size from a MySQL table.
-Depending on your database engine, you will need to come up with a similar function.</p>
-<p>id_column must contain unique, sequential itegers starting at 0 or 1</p>
+      <p>Returns a random sample of pairs of donors of a given size from a
+MySQL table.  Depending on your database engine, you will need to
+come up with a similar function.</p>
+<p>The id column must contain unique, sequential itegers starting at 0
+or 1</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="k">def</span> <span class="nf">getSample</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">sample_size</span><span class="p">,</span> <span class="n">id_column</span><span class="p">,</span> <span class="n">table</span><span class="p">):</span></pre></div>
@@ -134,7 +136,7 @@ Depending on your database engine, you will need to come up with a similar funct
       </div>
       <p>You'll need to copy <code>examples/mysql_example/mysql.cnf_LOCAL</code> to
 <code>examples/mysql_example/mysql.cnf</code> and fill in your mysql
-database information examples/mysql_example/mysql.cnf</p>
+database information <code>examples/mysql_example/mysql.cnf</code></p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="n">con</span> <span class="o">=</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">db</span><span class="o">=</span><span class="s">&#39;contributions&#39;</span><span class="p">,</span>
@@ -158,9 +160,10 @@ database information examples/mysql_example/mysql.cnf</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-6'>#</a>
       </div>
-      <p>As the dataset grows, duplicate pairs become more rare. 
-We need positive examples to train dedupe, so we have to
-signficantly increase the size of the sample compared to <code>csv_example.py</code></p>
+      <p>As the dataset grows, duplicate pairs become relatively more
+rare.  We need positive examples to train dedupe, so we have to
+signficantly increase the size of the sample compared to
+<code>csv_example.py</code></p>
     </div>
     <div class='code'>
       <div class="highlight"><pre>    <span class="k">print</span> <span class="s">&#39;selecting random sample from donors table...&#39;</span>
@@ -259,8 +262,8 @@ that contains blocking keys and record ids</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-12'>#</a>
       </div>
-      <p>First though, if we learned a tf-idf predicate, we have to create an
-tfIDF blocks for the full data set.</p>
+      <p>First though, if we learned a TF-IDF blocking rule, we have to
+create an TF-IDF canopies for the full data set.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="k">print</span> <span class="s">&#39;creating inverted index&#39;</span>
@@ -344,8 +347,8 @@ in to groups of 10,000 blocks</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-17'>#</a>
       </div>
-      <p>We create an index on the blocking key so that the 'group by
-queries' we will be making to cluster the data can  happen in a
+      <p>We create an index on the blocking key so that the <code>GROUP BY</code>
+queries we will be making to cluster the data can  happen in a
 reasonable time</p>
     </div>
     <div class='code'>
@@ -361,7 +364,7 @@ reasonable time</p>
         <a class='octothorpe' href='#section-18'>#</a>
       </div>
       <p>This grabs a block of records for comparison. We rely on the
-ordering of the donor_ids</p>
+ordering of the donor ids</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="n">block_select</span> <span class="o">=</span> <span class="p">(</span><span class="n">DONOR_SELECT</span> <span class="o">+</span> 
@@ -394,7 +397,7 @@ ordering of the donor_ids</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-20'>#</a>
       </div>
-      <p>We grab all the block_keys with more than one record associated with
+      <p>We grab all the block keys with more than one record associated with
 it. These associated records will make up a block of records we will
 compare within.</p>
     </div>
@@ -431,9 +434,9 @@ compare within.</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-22'>#</a>
       </div>
-      <p><code>duplicateClusters</code> gives us sequence of tuples of donor_ids that
+      <p><code>duplicateClusters</code> gives us sequence of tuples of donor ids that
 Dedupe believes all refer to the same entity. We write this out
-onto an entity map tbale</p>
+onto an entity map table</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;DROP TABLE IF EXISTS entity_map&quot;</span><span class="p">)</span>
