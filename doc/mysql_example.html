@@ -6,8 +6,8 @@
   <link rel="stylesheet" href="pycco.css">
 </head>
 <body>
-<div id="background"></div>
 <div id='container'>
+  <div id="background"></div>
   <div class='section'>
     <div class='docs'><h1>mysql_example.py</h1></div>
   </div>
@@ -20,9 +20,9 @@
       <p>This is an example of working with very large data. There are about
 700,000 unduplicated donors in this database of Illinois political
 campaign contributions.</p>
-<p>While can these donor records in memory, we cannot store all the
-comparisons we will plan to make. We will have to read the pairs on
-demand, from disk</p>
+<p>With such a large set of input data, we cannot store all the comparisons 
+we need to make in memory. Instead, we will read the pairs on demand
+from the MySQL database.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="kn">import</span> <span class="nn">os</span>
@@ -34,9 +34,31 @@ demand, from disk</p>
 <span class="kn">import</span> <span class="nn">MySQLdb</span>
 <span class="kn">import</span> <span class="nn">MySQLdb.cursors</span>
 
-<span class="kn">import</span> <span class="nn">dedupe</span>
-
-<span class="n">optp</span> <span class="o">=</span> <span class="n">optparse</span><span class="o">.</span><span class="n">OptionParser</span><span class="p">()</span>
+<span class="kn">import</span> <span class="nn">dedupe</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <h3>Logging</h3>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      <p>Dedupe uses Python logging to show or suppress verbose output. Added for convenience.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">optp</span> <span class="o">=</span> <span class="n">optparse</span><span class="o">.</span><span class="n">OptionParser</span><span class="p">()</span>
 <span class="n">optp</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;-v&#39;</span><span class="p">,</span> <span class="s">&#39;--verbose&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&#39;verbose&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;count&#39;</span><span class="p">,</span>
                 <span class="n">help</span><span class="o">=</span><span class="s">&#39;Increase verbosity (specify multiple times for more)&#39;</span>
                 <span class="p">)</span>
@@ -50,10 +72,10 @@ demand, from disk</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-1'>
+  <div class='section' id='section-3'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-1'>#</a>
+        <a class='octothorpe' href='#section-3'>#</a>
       </div>
       <h3>Setup</h3>
     </div>
@@ -62,13 +84,14 @@ demand, from disk</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-2'>
+  <div class='section' id='section-4'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-2'>#</a>
+        <a class='octothorpe' href='#section-4'>#</a>
       </div>
-      <p>When we compare records, we don't care about differences in case.
-Lowering the case in SQL is much faster than in Python.</p>
+      <p>Create a select function that pulls in our campaign donor info.
+When we compare records, we don't care about differences in casing,
+so we lower the case (doing this in SQL is much faster than in Python).</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="n">DONOR_SELECT</span> <span class="o">=</span> <span class="s">&quot;SELECT donor_id, LOWER(city) AS city, &quot;</span> \
@@ -80,34 +103,34 @@ Lowering the case in SQL is much faster than in Python.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-3'>
+  <div class='section' id='section-5'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-3'>#</a>
-      </div>
-      <p>Returns a random sample of pairs of donors of a given size from a
-MySQL table.  Depending on your database engine, you will need to
-come up with a similar function.</p>
-<p>The id column must contain unique, sequential itegers starting at 0
-or 1</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre><span class="k">def</span> <span class="nf">getSample</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">sample_size</span><span class="p">,</span> <span class="n">id_column</span><span class="p">,</span> <span class="n">table</span><span class="p">):</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-4'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-4'>#</a>
+        <a class='octothorpe' href='#section-5'>#</a>
       </div>
       
     </div>
     <div class='code'>
-      <div class="highlight"><pre>  <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;SELECT MAX(</span><span class="si">%s</span><span class="s">) FROM </span><span class="si">%s</span><span class="s">&quot;</span> <span class="p">,</span> <span class="p">(</span><span class="n">id_column</span><span class="p">,</span> <span class="n">table</span><span class="p">))</span>
-  <span class="n">num_records</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+      <div class="highlight"><pre><span class="k">def</span> <span class="nf">getSample</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">sample_size</span><span class="p">,</span> <span class="n">id_column</span><span class="p">,</span> <span class="n">table</span><span class="p">):</span>
+  <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">  Returns a random sample of a given size of records pairs from a given</span>
+<span class="sd">  MySQL table.</span>
+<span class="sd">  &#39;&#39;&#39;</span>
 
-  <span class="n">random_pairs</span> <span class="o">=</span> <span class="n">dedupe</span><span class="o">.</span><span class="n">randomPairs</span><span class="p">(</span><span class="n">num_records</span><span class="p">,</span> <span class="n">sample_size</span><span class="p">,</span> <span class="n">zero_indexed</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+  <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;SELECT MAX(</span><span class="si">%s</span><span class="s">) FROM </span><span class="si">%s</span><span class="s">&quot;</span> <span class="p">,</span> <span class="p">(</span><span class="n">id_column</span><span class="p">,</span> <span class="n">table</span><span class="p">))</span>
+  <span class="n">num_records</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-6'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-6'>#</a>
+      </div>
+      <p>dedupe expects the id column to contain unique, sequential itegers starting at 0 or 1</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>  <span class="n">random_pairs</span> <span class="o">=</span> <span class="n">dedupe</span><span class="o">.</span><span class="n">randomPairs</span><span class="p">(</span><span class="n">num_records</span><span class="p">,</span> <span class="n">sample_size</span><span class="p">,</span> <span class="n">zero_indexed</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 
   <span class="n">temp_d</span> <span class="o">=</span> <span class="p">{}</span>
 
@@ -117,10 +140,10 @@ or 1</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-5'>
+  <div class='section' id='section-7'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-5'>#</a>
+        <a class='octothorpe' href='#section-7'>#</a>
       </div>
       
     </div>
@@ -130,22 +153,53 @@ or 1</p>
       <span class="k">yield</span> <span class="p">((</span><span class="n">record_id_1</span><span class="p">,</span> <span class="n">temp_d</span><span class="p">[</span><span class="n">record_id_1</span><span class="p">]),</span>
              <span class="p">(</span><span class="n">record_id_2</span><span class="p">,</span> <span class="n">temp_d</span><span class="p">[</span><span class="n">record_id_2</span><span class="p">]))</span>
   
-  <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">record_pairs</span> <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">random_pair_generator</span><span class="p">())</span>
-
-<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s">&#39;./examples/mysql_example/&#39;</span><span class="p">)</span>
-<span class="n">settings_file</span> <span class="o">=</span> <span class="s">&#39;mysql_example_settings.json&#39;</span>
-<span class="n">training_file</span> <span class="o">=</span> <span class="s">&#39;mysql_example_training.json&#39;</span>
-
-
-
-<span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span></pre></div>
+  <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">record_pairs</span> <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">random_pair_generator</span><span class="p">())</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-6'>
+  <div class='section' id='section-8'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-6'>#</a>
+        <a class='octothorpe' href='#section-8'>#</a>
+      </div>
+      <p>Switch to our working directory and set up our settings and training
+file locations</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s">&#39;./examples/mysql_example/&#39;</span><span class="p">)</span>
+<span class="n">settings_file</span> <span class="o">=</span> <span class="s">&#39;mysql_example_settings.json&#39;</span>
+<span class="n">training_file</span> <span class="o">=</span> <span class="s">&#39;mysql_example_training.json&#39;</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-9'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-9'>#</a>
+      </div>
+      <p>keep track of our execution time</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-10'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-10'>#</a>
+      </div>
+      <h3>Create our database connection</h3>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-11'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-11'>#</a>
       </div>
       <p>You'll need to copy <code>examples/mysql_example/mysql.cnf_LOCAL</code> to
 <code>examples/mysql_example/mysql.cnf</code> and fill in your mysql
@@ -160,12 +214,12 @@ database information in <code>examples/mysql_example/mysql.cnf</code></p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-7'>
+  <div class='section' id='section-12'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-7'>#</a>
+        <a class='octothorpe' href='#section-12'>#</a>
       </div>
-      <h3>Learn or read how to compare records and good blocking rules</h3>
+      <h3>Data model setup and training</h3>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">settings_file</span><span class="p">):</span>
@@ -175,14 +229,14 @@ database information in <code>examples/mysql_example/mysql.cnf</code></p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-8'>
+  <div class='section' id='section-13'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-8'>#</a>
+        <a class='octothorpe' href='#section-13'>#</a>
       </div>
-      <p>As the dataset grows, duplicate pairs become relatively more
-rare.  We need positive examples to train dedupe, so we have to
-signficantly increase the size of the sample compared to
+      <p>Select a large sample of duplicate pairs.
+As the dataset grows, duplicate pairs become relatively more
+rare so we have to take a fairly large sample compared to
 <code>csv_example.py</code></p>
     </div>
     <div class='code'>
@@ -191,10 +245,10 @@ signficantly increase the size of the sample compared to
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-9'>
+  <div class='section' id='section-14'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-9'>#</a>
+        <a class='octothorpe' href='#section-14'>#</a>
       </div>
       <p>Define the fields dedupe will pay attention to</p>
     </div>
@@ -206,19 +260,30 @@ signficantly increase the size of the sample compared to
               <span class="s">&#39;city&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;String&#39;</span><span class="p">},</span>
               <span class="s">&#39;state&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;String&#39;</span><span class="p">},</span>
               <span class="s">&#39;zip&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;String&#39;</span><span class="p">},</span>
-              <span class="p">}</span>
-    <span class="n">deduper</span> <span class="o">=</span> <span class="n">dedupe</span><span class="o">.</span><span class="n">Dedupe</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span></pre></div>
+              <span class="p">}</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-10'>
+  <div class='section' id='section-15'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-10'>#</a>
+        <a class='octothorpe' href='#section-15'>#</a>
       </div>
-      <p>Sometimes we will want to add additional labeled examples to a
-training file. To do this can just load the existing labeled
-pairs...</p>
+      <p>Create a new deduper object and pass our data model to it.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="n">deduper</span> <span class="o">=</span> <span class="n">dedupe</span><span class="o">.</span><span class="n">Dedupe</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-16'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-16'>#</a>
+      </div>
+      <p>If we have training data saved from a previous run of dedupe,
+look for it an load it in.
+If you want to train from scratch, delete the training_file</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre>    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">training_file</span><span class="p">):</span>
@@ -230,27 +295,66 @@ pairs...</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-11'>
+  <div class='section' id='section-17'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-11'>#</a>
+        <a class='octothorpe' href='#section-17'>#</a>
       </div>
-      <p>... and then call training with our interactive function</p>
+      <p>Starts the trainin loop. Dedupe will find the next pair of records
+it is least certain about and ask you to label them as duplicates
+or not.
+use 'y', 'n' and 'u' keys to flag duplicates
+press 'f' when you are finished</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>    <span class="n">deduper</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">data_sample</span><span class="p">,</span> <span class="n">dedupe</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">consoleLabel</span><span class="p">)</span>
-    <span class="n">deduper</span><span class="o">.</span><span class="n">writeTraining</span><span class="p">(</span><span class="n">training_file</span><span class="p">)</span>
-
-<span class="k">print</span> <span class="s">&#39;blocking...&#39;</span>
-<span class="n">blocker</span> <span class="o">=</span> <span class="n">deduper</span><span class="o">.</span><span class="n">blockingFunction</span><span class="p">(</span><span class="n">eta</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-<span class="n">deduper</span><span class="o">.</span><span class="n">writeSettings</span><span class="p">(</span><span class="n">settings_file</span><span class="p">)</span></pre></div>
+      <div class="highlight"><pre>    <span class="n">deduper</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">data_sample</span><span class="p">,</span> <span class="n">dedupe</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">consoleLabel</span><span class="p">)</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-12'>
+  <div class='section' id='section-18'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-12'>#</a>
+        <a class='octothorpe' href='#section-18'>#</a>
+      </div>
+      <p>When finished, save our training away to disk</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="n">deduper</span><span class="o">.</span><span class="n">writeTraining</span><span class="p">(</span><span class="n">training_file</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&#39;blocking...&#39;</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-19'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-19'>#</a>
+      </div>
+      <p>Initialize our blocker, which determine our field weights and blocking 
+predicates based on our training data</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">blocker</span> <span class="o">=</span> <span class="n">deduper</span><span class="o">.</span><span class="n">blockingFunction</span><span class="p">(</span><span class="n">eta</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-20'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-20'>#</a>
+      </div>
+      <p>Save our weights and predicates to disk.
+If the settings file exists, we will skip all the training and learning</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">deduper</span><span class="o">.</span><span class="n">writeSettings</span><span class="p">(</span><span class="n">settings_file</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-21'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-21'>#</a>
       </div>
       <h3>Blocking on disk</h3>
     </div>
@@ -259,26 +363,13 @@ pairs...</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-13'>
+  <div class='section' id='section-22'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-13'>#</a>
+        <a class='octothorpe' href='#section-22'>#</a>
       </div>
-      <p>So the learning is done and we have our blocker. However we cannot
-block the data in memory. We have to pass through all the data and
-create a blocking map table.</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-14'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-14'>#</a>
-      </div>
-      <p>To run blocking on such a large set of data, we create a separate table
+      <p>Iterate through all our input data and create a blocking map.
+To run blocking on such a large set of data, we create a separate table
 that contains blocking keys and record ids</p>
     </div>
     <div class='code'>
@@ -289,13 +380,15 @@ that contains blocking keys and record ids</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-15'>
+  <div class='section' id='section-23'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-15'>#</a>
+        <a class='octothorpe' href='#section-23'>#</a>
       </div>
-      <p>First though, if we learned a TF-IDF blocking rule, we have to
-create an TF-IDF canopies for the full data set.</p>
+      <p>We are using <a href="http://en.wikipedia.org/wiki/Tf%E2%80%93idf">TF/IDF</a> as a 
+potential predicate. 
+If dedupe learned a TF-IDF blocking rule, we create go through the extra
+step of creating TF-IDF canopies.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="k">print</span> <span class="s">&#39;creating inverted index&#39;</span>
@@ -305,24 +398,23 @@ create an TF-IDF canopies for the full data set.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-16'>
+  <div class='section' id='section-24'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-16'>#</a>
+        <a class='octothorpe' href='#section-24'>#</a>
       </div>
-      <p>Finally, we are ready to block the data. We'll do this by creating
-a generator that yields <code>(block_key, donor_id)</code> tuples. Dedupe guarantees
-that these tuples will be unique</p>
+      <p>Next, we write our blocking map table by creating a generator that 
+yields unique <code>(block_key, donor_id)</code> tuples.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="k">print</span> <span class="s">&#39;writing blocking map&#39;</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-17'>
+  <div class='section' id='section-25'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-17'>#</a>
+        <a class='octothorpe' href='#section-25'>#</a>
       </div>
       
     </div>
@@ -340,14 +432,13 @@ that these tuples will be unique</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-18'>
+  <div class='section' id='section-26'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-18'>#</a>
+        <a class='octothorpe' href='#section-26'>#</a>
       </div>
-      <p>MySQL, by default, has a hard limit on the size of a data object 
-that can be passed to it. To get around this, we chunk the blocked data
-in to groups of 10,000 blocks</p>
+      <p>MySQL has a hard limit on the size of a data object that can be passed to it. 
+To get around this, we chunk the blocked data in to groups of 10,000 blocks</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="n">step</span> <span class="o">=</span> <span class="mi">10000</span>
@@ -357,10 +448,10 @@ in to groups of 10,000 blocks</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-19'>
+  <div class='section' id='section-27'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-19'>#</a>
+        <a class='octothorpe' href='#section-27'>#</a>
       </div>
       <p>This takes the generator and writes into into our table</p>
     </div>
@@ -374,14 +465,12 @@ in to groups of 10,000 blocks</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-20'>
+  <div class='section' id='section-28'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-20'>#</a>
+        <a class='octothorpe' href='#section-28'>#</a>
       </div>
-      <p>We create an index on the blocking key so that the <code>GROUP BY</code>
-queries we will be making to cluster the data can  happen in a
-reasonable time</p>
+      <p>Create an index on the blocking key for faster clustering</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="k">print</span> <span class="s">&#39;creating blocking map index. this will probably take a while ...&#39;</span>
@@ -390,25 +479,24 @@ reasonable time</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-21'>
+  <div class='section' id='section-29'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-21'>#</a>
+        <a class='octothorpe' href='#section-29'>#</a>
       </div>
-      <h3>Clustering from disk</h3>
+      <h3>Clustering</h3>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-22'>
+  <div class='section' id='section-30'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-22'>#</a>
+        <a class='octothorpe' href='#section-30'>#</a>
       </div>
-      <p>This grabs a block of records for comparison. We rely on the
-ordering of the donor ids</p>
+      <p>Grabs a block of records for comparison.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="n">block_select</span> <span class="o">=</span> <span class="p">(</span><span class="n">DONOR_SELECT</span> <span class="o">+</span> 
@@ -417,12 +505,12 @@ ordering of the donor ids</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-23'>
+  <div class='section' id='section-31'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-23'>#</a>
+        <a class='octothorpe' href='#section-31'>#</a>
       </div>
-      <p>This generator yields blocks of data</p>
+      <p>Generator function that yields records based on blocking map keys</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="k">def</span> <span class="nf">candidates_gen</span><span class="p">(</span><span class="n">block_keys</span><span class="p">)</span> <span class="p">:</span>
@@ -436,14 +524,13 @@ ordering of the donor ids</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-24'>
+  <div class='section' id='section-32'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-24'>#</a>
+        <a class='octothorpe' href='#section-32'>#</a>
       </div>
-      <p>We grab all the block keys with more than one record associated with
-it. These associated records will make up a block of records we will
-compare within.</p>
+      <p>Grab all the block keys with more than one record.
+These records will make up a block of records we will cluster.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="n">blocking_key_sql</span> <span class="o">=</span> <span class="s">&quot;SELECT block_key, COUNT(*) AS num_candidates &quot;</span> \
@@ -451,20 +538,29 @@ compare within.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-25'>
+  <div class='section' id='section-33'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-25'>#</a>
+        <a class='octothorpe' href='#section-33'>#</a>
       </div>
-      <p>Using a random sample of blocks we find a good threshold</p>
+      <p>Using a random sample of blocks we use goodThreshold find our clustering threshold</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">blocking_key_sql</span> <span class="o">+</span> <span class="s">&quot; ORDER BY RAND() LIMIT 1000&quot;</span><span class="p">)</span>
 <span class="n">sampled_block_keys</span> <span class="o">=</span> <span class="n">block_keys</span> <span class="o">=</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s">&#39;block_key&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">fetchall</span><span class="p">())</span>
-<span class="n">threshold</span> <span class="o">=</span> <span class="n">deduper</span><span class="o">.</span><span class="n">goodThreshold</span><span class="p">(</span><span class="n">candidates_gen</span><span class="p">(</span><span class="n">sampled_block_keys</span><span class="p">))</span>
-
-
-<span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">blocking_key_sql</span><span class="p">)</span>
+<span class="n">threshold</span> <span class="o">=</span> <span class="n">deduper</span><span class="o">.</span><span class="n">goodThreshold</span><span class="p">(</span><span class="n">candidates_gen</span><span class="p">(</span><span class="n">sampled_block_keys</span><span class="p">))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-34'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-34'>#</a>
+      </div>
+      <p>With our found threshold, and candidates generator, perform the clustering operation</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">blocking_key_sql</span><span class="p">)</span>
 <span class="n">block_keys</span> <span class="o">=</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s">&#39;block_key&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">fetchall</span><span class="p">())</span>
 
 <span class="k">print</span> <span class="s">&#39;clustering...&#39;</span>
@@ -473,10 +569,10 @@ compare within.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-26'>
+  <div class='section' id='section-35'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-26'>#</a>
+        <a class='octothorpe' href='#section-35'>#</a>
       </div>
       <h3>Writing out results</h3>
     </div>
@@ -485,14 +581,13 @@ compare within.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-27'>
+  <div class='section' id='section-36'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-27'>#</a>
+        <a class='octothorpe' href='#section-36'>#</a>
       </div>
-      <p><code>duplicateClusters</code> gives us sequence of tuples of donor ids that
-Dedupe believes all refer to the same entity. We write this out
-onto an entity map table</p>
+      <p>We now have a sequence of tuples of donor ids that dedupe believes all 
+refer to the same entity. We write this out onto an entity map table</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;DROP TABLE IF EXISTS entity_map&quot;</span><span class="p">)</span>
@@ -512,14 +607,45 @@ onto an entity map table</p>
 <span class="n">con</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
 
 <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;CREATE INDEX head_index ON entity_map (head_id)&quot;</span><span class="p">)</span>
-<span class="n">con</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-        
-<span class="k">print</span> <span class="s">&#39;# duplicate sets&#39;</span>
-<span class="k">print</span> <span class="nb">len</span><span class="p">(</span><span class="n">clustered_dupes</span><span class="p">)</span>
-
-<span class="n">c</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-<span class="n">con</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-<span class="k">print</span> <span class="s">&#39;ran in&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">,</span> <span class="s">&#39;seconds&#39;</span>
+<span class="n">con</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-37'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-37'>#</a>
+      </div>
+      <p>Print out the number of duplicates found</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">print</span> <span class="s">&#39;# duplicate sets&#39;</span>
+<span class="k">print</span> <span class="nb">len</span><span class="p">(</span><span class="n">clustered_dupes</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-38'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-38'>#</a>
+      </div>
+      <p>Close our database connection</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">c</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">con</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-39'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-39'>#</a>
+      </div>
+      <p>Print our run time</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">print</span> <span class="s">&#39;ran in&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">,</span> <span class="s">&#39;seconds&#39;</span>
 
 </pre></div>
     </div>
