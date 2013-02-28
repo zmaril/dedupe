@@ -179,7 +179,7 @@ file locations</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s">&#39;./examples/mysql_example/&#39;</span><span class="p">)</span>
-<span class="n">settings_file</span> <span class="o">=</span> <span class="s">&#39;mysql_example_settings.json&#39;</span>
+<span class="n">settings_file</span> <span class="o">=</span> <span class="s">&#39;mysql_example_settings&#39;</span>
 <span class="n">training_file</span> <span class="o">=</span> <span class="s">&#39;mysql_example_training.json&#39;</span>
 
 <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span></pre></div>
@@ -570,7 +570,7 @@ that maximizes the weighted average of our precision and recall</p>
     <div class='code'>
       <div class="highlight"><pre><span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">blocking_key_sql</span> <span class="o">+</span> <span class="s">&quot; ORDER BY RAND() LIMIT 1000&quot;</span><span class="p">)</span>
 <span class="n">sampled_block_keys</span> <span class="o">=</span> <span class="n">block_keys</span> <span class="o">=</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s">&#39;block_key&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">fetchall</span><span class="p">())</span>
-<span class="n">threshold</span> <span class="o">=</span> <span class="n">deduper</span><span class="o">.</span><span class="n">goodThreshold</span><span class="p">(</span><span class="n">candidates_gen</span><span class="p">(</span><span class="n">sampled_block_keys</span><span class="p">))</span></pre></div>
+<span class="n">threshold</span> <span class="o">=</span> <span class="n">deduper</span><span class="o">.</span><span class="n">goodThreshold</span><span class="p">(</span><span class="n">candidates_gen</span><span class="p">(</span><span class="n">sampled_block_keys</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
