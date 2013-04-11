@@ -59,14 +59,16 @@ Dedupe class</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-1'>#</a>
       </div>
-      <p>Public methods:
-<em> <strong>init</strong>
-</em> train
-<em> blockingFunction
-</em> goodThreshold
-<em> duplicateClusters
-</em> writeTraining
-* writeSettings</p>
+      <p>Public methods:</p>
+<ul>
+<li><strong>init</strong></li>
+<li>train</li>
+<li>blockingFunction</li>
+<li>goodThreshold</li>
+<li>duplicateClusters</li>
+<li>writeTraining</li>
+<li>writeSettings</li>
+</ul>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="k">class</span> <span class="nc">Dedupe</span><span class="p">:</span></pre></div>
@@ -109,12 +111,11 @@ deduper = dedupe.Dedupe('my_learned_settings')
 </code></pre>
 <p>or</p>
 <pre><code># initialize from a defined set of fields
-fields = {
-          'Site name': {'type': 'String'},
-          'Address': {'type': 'String'},
-          'Zip': {'type': 'String', 'Has Missing':True},
-          'Phone': {'type': 'String', 'Has Missing':True},
-}
+fields = {'Site name': {'type': 'String'},
+          'Address':   {'type': 'String'},
+          'Zip':       {'type': 'String', 'Has Missing':True},
+          'Phone':     {'type': 'String', 'Has Missing':True},
+          }
 
 deduper = dedupe.Dedupe(fields)
 </code></pre>
@@ -125,8 +126,10 @@ A field definition or a file location for a settings file.</p>
 <p>A field definition is a dictionary where the keys are the fields
 that will be used for training a model and the values are the
 field specification</p>
-<p>Field types include
-* String</p>
+<p>Field types include</p>
+<ul>
+<li>String</li>
+</ul>
 <p>A 'String' type field must have as its key a name of a field
 as it appears in the data dictionary and a type declaration
 ex. <code>{'Phone': {type: 'String'}}</code></p>
