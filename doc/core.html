@@ -39,24 +39,10 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-1'>#</a>
       </div>
-      
+      <p>Return random combinations of indicies for a square matrix of</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="k">def</span> <span class="nf">randomPairs</span><span class="p">(</span><span class="n">n_records</span><span class="p">,</span> <span class="n">sample_size</span><span class="p">,</span> <span class="n">zero_indexed</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Return random combinations of indicies for a square matrix of</span>
-<span class="sd">    size n records&#39;&#39;&#39;</span>
-
-    <span class="k">if</span> <span class="n">n_records</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Needs at least two records&quot;</span><span class="p">)</span>
-    <span class="n">n</span> <span class="o">=</span> <span class="n">n_records</span> <span class="o">*</span> <span class="p">(</span><span class="n">n_records</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
-
-    <span class="k">if</span> <span class="n">sample_size</span> <span class="o">&gt;=</span> <span class="n">n</span><span class="p">:</span>
-        <span class="n">random_indices</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-        <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">random_indices</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">random_indices</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">xrange</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="n">sample_size</span><span class="p">))</span>
-        <span class="k">except</span> <span class="ne">OverflowError</span><span class="p">:</span></pre></div>
+      <div class="highlight"><pre><span class="k">def</span> <span class="nf">randomPairs</span><span class="p">(</span><span class="n">n_records</span><span class="p">,</span> <span class="n">sample_size</span><span class="p">,</span> <span class="n">zero_indexed</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -65,900 +51,375 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-2'>#</a>
       </div>
-      <p>If the population is very large relative to the sample
-size than we'll get very few duplicates by chance</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;There may be duplicates in the sample&quot;</span><span class="p">)</span>
-            <span class="n">sample</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">xrange</span><span class="p">(</span><span class="n">n_records</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
-                                  <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">sample_size</span><span class="p">)])</span>
-            <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+      <p>size n records"""</p>
+<p>if n_records &lt; 2 :
+    raise ValueError("Needs at least two records")
+n = n_records * (n_records - 1) / 2</p>
+<p>if sample_size &gt;= n:
+    random_indices = numpy.arange(n)
+    numpy.random.shuffle(random_indices)
+else:
+    try:
+        random_indices = numpy.array(random.sample(xrange(n), sample_size))
+    except OverflowError:
+        # If the population is very large relative to the sample
+        # size than we'll get very few duplicates by chance
+        logging.warning("There may be duplicates in the sample")
+        sample = numpy.array([random.sample(xrange(n_records), 2)
+                              for _ in xrange(sample_size)])
+        return numpy.sort(sample, axis=1)</p>
+<p>b = 1 - 2 * n_records</p>
+<p>x = numpy.trunc((-b - numpy.sqrt(b ** 2 - 8 * random_indices)) / 2)
+y = random_indices + x * (b + x + 2) / 2 + 1</p>
+<p>if not zero_indexed:
+    x += 1
+    y += 1</p>
+<p>return numpy.column_stack((x, y))</p>
+<p>dataSample(d, sample_size):</p>
+<p>random_pairs = randomPairs(len(d), sample_size)</p>
+<p>return tuple(((k_1, d[k_1]), (k_2, d[k_2])) for (k_1, k_2) in random_pairs)</p>
+<p>trainModel(training_data, data_model, alpha=.001):
+'''Use logistic regression to train weights for all fields in the data model'''
+labels = training_data['label']
+examples = training_data['distances']</p>
+<p>(weight, bias) = lr.lr(labels, examples, alpha)</p>
+<p>fields = sorted(data_model['fields'].keys())</p>
+<p>for (i, name) in enumerate(fields):
+    data_model['fields'][name]['weight'] = float(weight[i])</p>
+<p>data_model['bias'] = bias</p>
+<p>return data_model</p>
+<p>fieldDistances(candidates, data_model):
+fields = data_model['fields']
+record_dtype = [('pairs', 'i4', 2), ('distances', 'f4', (len(fields), ))]</p>
+<p>(candidates_1, candidates_2) = itertools.tee(candidates, 2)</p>
+<p>key_pairs = (candidate[0] for candidate_pair in candidates_1
+             for candidate in candidate_pair)</p>
+<p>record_pairs = ((candidate_1[1], candidate_2[1]) 
+                for (candidate_1, candidate_2) in candidates_2)</p>
+<p>_field_distances = buildFieldDistances(record_pairs, fields)</p>
+<p>field_distances = numpy.zeros(_field_distances.shape[0],
+                              dtype=record_dtype)</p>
+<p>field_distances['pairs'] = numpy.fromiter(key_pairs, 'i4').reshape(-1, 2)
+field_distances['distances'] = _field_distances</p>
+<p>return field_distances</p>
+<p>buildFieldDistances(record_pairs, fields):</p>
+<p>field_comparators = [(field, v['comparator'])
+                     for field, v in fields.items()
+                     if v['type'] not in ('Missing Data',
+                                          'Interaction')]</p>
+<p>missing_field_indices = [i for i, (field, v) 
+                         in enumerate(fields.items())
+                         if 'Has Missing' in v and v['Has Missing']]</p>
+<p>field_names = fields.keys()</p>
+<p>interactions = []
+for field in field_names :
+    if fields[field]['type'] == 'Interaction' :
+        interaction_indices = []
+        for interaction_field in fields[field]['Interaction Fields'] :
+            interaction_indices.append(field_names.index(interaction_field))
+        interactions.append(interaction_indices)</p>
+<p>field_distances = numpy.fromiter((compare(record_pair[0][field],
+                                          record_pair[1][field]) 
+                                  for record_pair in record_pairs 
+                                  for field, compare in field_comparators), 
+                                 'f4')
+field_distances = field_distances.reshape(-1,len(field_comparators))</p>
+<p>interaction_distances = numpy.empty((field_distances.shape[0],
+                                     len(interactions)))</p>
+<p>for i, interaction in enumerate(interactions) :
+    a = numpy.prod(field_distances[...,interaction], axis=1)
+    interaction_distances[...,i] = a</p>
+<p>field_distances = numpy.concatenate((field_distances,
+                                     interaction_distances),
+                                    axis=1)</p>
+<p>missing_data = numpy.isnan(field_distances)</p>
+<p>field_distances[missing_data] = 0</p>
+<p>missing_indicators = 1-missing_data[:,missing_field_indices]</p>
+<p>field_distances = numpy.concatenate((field_distances,
+                                     1-missing_data[:,missing_field_indices]),
+                                    axis=1)</p>
+<p>return field_distances</p>
+<p>scorePairs(field_distances, data_model):
+fields = data_model['fields']
+field_names = sorted(data_model['fields'].keys())</p>
+<p>field_weights = [fields[name]['weight'] for name in field_names]
+bias = data_model['bias']</p>
+<p>distances = field_distances['distances']</p>
+<p>scores = numpy.dot(distances, field_weights)</p>
+<p>scores = numpy.exp(scores + bias) / (1 + numpy.exp(scores + bias))</p>
+<p>return scores</p>
+<p>scoreDuplicates(candidates, data_model, threshold=None):</p>
+<p>score_dtype = [('pairs', 'i4', 2), ('score', 'f4', 1)]
+scored_pairs = numpy.zeros(0, dtype=score_dtype)</p>
+<p>complete = False
+chunk_size = 5000
+i = 1
+while not complete:</p>
+<pre><code>can_slice = list(itertools.islice(candidates, 0, chunk_size))
 
+field_distances = fieldDistances(can_slice, data_model)
+duplicate_scores = scorePairs(field_distances, data_model)
 
+scored_pairs = numpy.append(scored_pairs,
+                            numpy.array(zip(field_distances['pairs'],
+                                            duplicate_scores),
+                                        dtype=score_dtype)[duplicate_scores &gt; threshold], 
+                            axis=0)
+i += 1
+if len(field_distances) &lt; chunk_size:
+    complete = True
+    logging.info('num chunks %d' % i)
+</code></pre>
+<p>logging.info('all scores %d' % scored_pairs.shape)
+scored_pairs = numpy.unique(scored_pairs)
+logging.info('unique scores %d' % scored_pairs.shape)</p>
+<p>return scored_pairs</p>
+<p>s frozendict(dict):
+'''
+A data type for hashable dictionaries
+From http://code.activestate.com/recipes/414283-frozen-dictionaries/
+'''</p>
+<p>def _blocked_attribute(obj):
+    raise AttributeError('A frozendict cannot be modified.')</p>
+<p>_blocked_attribute = property(_blocked_attribute)</p>
+<p><strong>delitem</strong> = <strong>setitem</strong> = clear = _blocked_attribute
+pop = popitem = setdefault = update = _blocked_attribute</p>
+<p>def <strong>new</strong>(cls, <em>args):
+    new = dict.<strong>new</strong>(cls)
+    dict.<strong>init</strong>(new, </em>args)
+    return new</p>
+<p>def <strong>init</strong>(self, *args):
+    pass</p>
+<p>def <strong>hash</strong>(self):
+    try:
+        return self._cached_hash
+    except AttributeError:
+        h = self._cached_hash = hash(tuple(sorted(self.items())))
+        return h</p>
+<p>{{ http://code.activestate.com/recipes/576693/ (r9)
+ckport of OrderedDict() class that runs on Python 2.4, 2.5, 2.6, 2.7 and pypy.
+sses Python2.7's test suite and incorporates all the latest updates.</p>
+<p>from thread import get_ident as _get_ident
+pt ImportError:
+from dummy_thread import get_ident as _get_ident</p>
+<p>from _abcoll import KeysView, ValuesView, ItemsView
+pt ImportError:
+pass</p>
+<p>s OrderedDict(dict):
+'Dictionary that remembers insertion order'</p>
+<h1>An inherited dict maps keys to values.</h1>
+<h1>The inherited dict provides <strong>getitem</strong>, <strong>len</strong>, <strong>contains</strong>, and get.</h1>
+<h1>The remaining methods are order-aware.</h1>
+<h1>Big-O running times for all methods are the same as for regular dictionaries.</h1>
+<h1>The internal self.__map dictionary maps keys to links in a doubly linked list.</h1>
+<h1>The circular doubly linked list starts and ends with a sentinel element.</h1>
+<h1>The sentinel element never gets deleted (this simplifies the algorithm).</h1>
+<h1>Each link is stored as a list of length three:  [PREV, NEXT, KEY].</h1>
+<p>def <strong>init</strong>(self, <em>args, </em>*kwds):
+    '''Initialize an ordered dictionary.  Signature is the same as for
+    regular dictionaries, but keyword arguments are not recommended
+    because their insertion order is arbitrary.</p>
+<pre><code>'''
+if len(args) &gt; 1:
+    raise TypeError('expected at most 1 arguments, got %d' % len(args))
+try:
+    self.__root
+except AttributeError:
+    self.__root = root = []                     # sentinel node
+    root[:] = [root, root, None]
+    self.__map = {}
+self.__update(*args, **kwds)
+</code></pre>
+<p>def <strong>setitem</strong>(self, key, value, dict_setitem=dict.<strong>setitem</strong>):
+    'od.<strong>setitem</strong>(i, y) &lt;==&gt; od[i]=y'
+    # Setting a new item creates a new link which goes at the end of the linked
+    # list, and the inherited dictionary is updated with the new key/value pair.
+    if key not in self:
+        root = self.<strong>root
+        last = root[0]
+        last[1] = root[0] = self.</strong>map[key] = [last, root, key]
+    dict_setitem(self, key, value)</p>
+<p>def <strong>delitem</strong>(self, key, dict_delitem=dict.<strong>delitem</strong>):
+    'od.<strong>delitem</strong>(y) &lt;==&gt; del od[y]'
+    # Deleting an existing item uses self.<strong>map to find the link which is
+    # then removed by updating the links in the predecessor and successor nodes.
+    dict_delitem(self, key)
+    link_prev, link_next, key = self.</strong>map.pop(key)
+    link_prev[1] = link_next
+    link_next[0] = link_prev</p>
+<p>def <strong>iter</strong>(self):
+    'od.<strong>iter</strong>() &lt;==&gt; iter(od)'
+    root = self.__root
+    curr = root[1]
+    while curr is not root:
+        yield curr[2]
+        curr = curr[1]</p>
+<p>def <strong>reversed</strong>(self):
+    'od.<strong>reversed</strong>() &lt;==&gt; reversed(od)'
+    root = self.__root
+    curr = root[0]
+    while curr is not root:
+        yield curr[2]
+        curr = curr[0]</p>
+<p>def clear(self):
+    'od.clear() -&gt; None.  Remove all items from od.'
+    try:
+        for node in self.<strong>map.itervalues():
+            del node[:]
+        root = self.</strong>root
+        root[:] = [root, root, None]
+        self.__map.clear()
+    except AttributeError:
+        pass
+    dict.clear(self)</p>
+<p>def popitem(self, last=True):
+    '''od.popitem() -&gt; (k, v), return and remove a (key, value) pair.
+    Pairs are returned in LIFO order if last is true or FIFO order if false.</p>
+<pre><code>'''
+if not self:
+    raise KeyError('dictionary is empty')
+root = self.__root
+if last:
+    link = root[0]
+    link_prev = link[0]
+    link_prev[1] = root
+    root[0] = link_prev
+else:
+    link = root[1]
+    link_next = link[1]
+    root[1] = link_next
+    link_next[0] = root
+key = link[2]
+del self.__map[key]
+value = dict.pop(self, key)
+return key, value
+</code></pre>
+<h1>-- the following methods do not depend on the internal structure --</h1>
+<p>def keys(self):
+    'od.keys() -&gt; list of keys in od'
+    return list(self)</p>
+<p>def values(self):
+    'od.values() -&gt; list of values in od'
+    return [self[key] for key in self]</p>
+<p>def items(self):
+    'od.items() -&gt; list of (key, value) pairs in od'
+    return [(key, self[key]) for key in self]</p>
+<p>def iterkeys(self):
+    'od.iterkeys() -&gt; an iterator over the keys in od'
+    return iter(self)</p>
+<p>def itervalues(self):
+    'od.itervalues -&gt; an iterator over the values in od'
+    for k in self:
+        yield self[k]</p>
+<p>def iteritems(self):
+    'od.iteritems -&gt; an iterator over the (key, value) items in od'
+    for k in self:
+        yield (k, self[k])</p>
+<p>def update(*args, <strong>kwds):
+    '''od.update(E, </strong>F) -&gt; None.  Update od from dict/iterable E and F.</p>
+<pre><code>If E is a dict instance, does:           for k in E: od[k] = E[k]
+If E has a .keys() method, does:         for k in E.keys(): od[k] = E[k]
+Or if E is an iterable of items, does:   for k, v in E: od[k] = v
+In either case, this is followed by:     for k, v in F.items(): od[k] = v
 
-    <span class="n">b</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">n_records</span>
-
-    <span class="n">x</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">trunc</span><span class="p">((</span><span class="o">-</span><span class="n">b</span> <span class="o">-</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">b</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">8</span> <span class="o">*</span> <span class="n">random_indices</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
-    <span class="n">y</span> <span class="o">=</span> <span class="n">random_indices</span> <span class="o">+</span> <span class="n">x</span> <span class="o">*</span> <span class="p">(</span><span class="n">b</span> <span class="o">+</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">zero_indexed</span><span class="p">:</span>
-        <span class="n">x</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="n">y</span> <span class="o">+=</span> <span class="mi">1</span>
-
-    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">column_stack</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-3'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-3'>#</a>
-      </div>
-      
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre><span class="k">def</span> <span class="nf">dataSample</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">sample_size</span><span class="p">):</span>
-
-    <span class="n">random_pairs</span> <span class="o">=</span> <span class="n">randomPairs</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">),</span> <span class="n">sample_size</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(((</span><span class="n">k_1</span><span class="p">,</span> <span class="n">d</span><span class="p">[</span><span class="n">k_1</span><span class="p">]),</span> <span class="p">(</span><span class="n">k_2</span><span class="p">,</span> <span class="n">d</span><span class="p">[</span><span class="n">k_2</span><span class="p">]))</span> <span class="k">for</span> <span class="p">(</span><span class="n">k_1</span><span class="p">,</span> <span class="n">k_2</span><span class="p">)</span> <span class="ow">in</span> <span class="n">random_pairs</span><span class="p">)</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-4'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-4'>#</a>
-      </div>
-      
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre><span class="k">def</span> <span class="nf">trainModel</span><span class="p">(</span><span class="n">training_data</span><span class="p">,</span> <span class="n">data_model</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=.</span><span class="mo">001</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Use logistic regression to train weights for all fields in the data model&#39;&#39;&#39;</span>
-    <span class="n">labels</span> <span class="o">=</span> <span class="n">training_data</span><span class="p">[</span><span class="s">&#39;label&#39;</span><span class="p">]</span>
-    <span class="n">examples</span> <span class="o">=</span> <span class="n">training_data</span><span class="p">[</span><span class="s">&#39;distances&#39;</span><span class="p">]</span>
-
-    <span class="p">(</span><span class="n">weight</span><span class="p">,</span> <span class="n">bias</span><span class="p">)</span> <span class="o">=</span> <span class="n">lr</span><span class="o">.</span><span class="n">lr</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">examples</span><span class="p">,</span> <span class="n">alpha</span><span class="p">)</span>
-
-    <span class="n">fields</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">data_model</span><span class="p">[</span><span class="s">&#39;fields&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-
-    <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">fields</span><span class="p">):</span>
-        <span class="n">data_model</span><span class="p">[</span><span class="s">&#39;fields&#39;</span><span class="p">][</span><span class="n">name</span><span class="p">][</span><span class="s">&#39;weight&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">weight</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-
-    <span class="n">data_model</span><span class="p">[</span><span class="s">&#39;bias&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bias</span>
-
-    <span class="k">return</span> <span class="n">data_model</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-5'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-5'>#</a>
-      </div>
-      
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre><span class="k">def</span> <span class="nf">fieldDistances</span><span class="p">(</span><span class="n">candidates</span><span class="p">,</span> <span class="n">data_model</span><span class="p">):</span>
-    <span class="n">fields</span> <span class="o">=</span> <span class="n">data_model</span><span class="p">[</span><span class="s">&#39;fields&#39;</span><span class="p">]</span>
-    <span class="n">record_dtype</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&#39;pairs&#39;</span><span class="p">,</span> <span class="s">&#39;i4&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;distances&#39;</span><span class="p">,</span> <span class="s">&#39;f4&#39;</span><span class="p">,</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">),</span> <span class="p">))]</span>
-
-    <span class="p">(</span><span class="n">candidates_1</span><span class="p">,</span> <span class="n">candidates_2</span><span class="p">)</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">tee</span><span class="p">(</span><span class="n">candidates</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-
-    <span class="n">key_pairs</span> <span class="o">=</span> <span class="p">(</span><span class="n">candidate</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">candidate_pair</span> <span class="ow">in</span> <span class="n">candidates_1</span>
-                 <span class="k">for</span> <span class="n">candidate</span> <span class="ow">in</span> <span class="n">candidate_pair</span><span class="p">)</span>
-
-    <span class="n">record_pairs</span> <span class="o">=</span> <span class="p">((</span><span class="n">candidate_1</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">candidate_2</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> 
-                    <span class="k">for</span> <span class="p">(</span><span class="n">candidate_1</span><span class="p">,</span> <span class="n">candidate_2</span><span class="p">)</span> <span class="ow">in</span> <span class="n">candidates_2</span><span class="p">)</span>
-
-    <span class="n">_field_distances</span> <span class="o">=</span> <span class="n">buildFieldDistances</span><span class="p">(</span><span class="n">record_pairs</span><span class="p">,</span> <span class="n">fields</span><span class="p">)</span>
-
-    <span class="n">field_distances</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">_field_distances</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                                  <span class="n">dtype</span><span class="o">=</span><span class="n">record_dtype</span><span class="p">)</span>
-
-    <span class="n">field_distances</span><span class="p">[</span><span class="s">&#39;pairs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">fromiter</span><span class="p">(</span><span class="n">key_pairs</span><span class="p">,</span> <span class="s">&#39;i4&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-    <span class="n">field_distances</span><span class="p">[</span><span class="s">&#39;distances&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_field_distances</span>
-
-    <span class="k">return</span> <span class="n">field_distances</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-6'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-6'>#</a>
-      </div>
-      
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre><span class="k">def</span> <span class="nf">buildFieldDistances</span><span class="p">(</span><span class="n">record_pairs</span><span class="p">,</span> <span class="n">fields</span><span class="p">):</span>
-
-    <span class="n">field_comparators</span> <span class="o">=</span> <span class="p">[(</span><span class="n">field</span><span class="p">,</span> <span class="n">v</span><span class="p">[</span><span class="s">&#39;comparator&#39;</span><span class="p">])</span>
-                         <span class="k">for</span> <span class="n">field</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">fields</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-                         <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="s">&#39;type&#39;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;Missing Data&#39;</span><span class="p">,</span>
-                                              <span class="s">&#39;Interaction&#39;</span><span class="p">)]</span>
-
-
-    <span class="n">missing_field_indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> 
-                             <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">fields</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
-                             <span class="k">if</span> <span class="s">&#39;Has Missing&#39;</span> <span class="ow">in</span> <span class="n">v</span> <span class="ow">and</span> <span class="n">v</span><span class="p">[</span><span class="s">&#39;Has Missing&#39;</span><span class="p">]]</span>
-
-    <span class="n">field_names</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-
-    <span class="n">interactions</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">field_names</span> <span class="p">:</span>
-        <span class="k">if</span> <span class="n">fields</span><span class="p">[</span><span class="n">field</span><span class="p">][</span><span class="s">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;Interaction&#39;</span> <span class="p">:</span>
-            <span class="n">interaction_indices</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">for</span> <span class="n">interaction_field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">[</span><span class="n">field</span><span class="p">][</span><span class="s">&#39;Interaction Fields&#39;</span><span class="p">]</span> <span class="p">:</span>
-                <span class="n">interaction_indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">field_names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">interaction_field</span><span class="p">))</span>
-            <span class="n">interactions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">interaction_indices</span><span class="p">)</span>
-    
-                               
-    <span class="n">field_distances</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">fromiter</span><span class="p">((</span><span class="n">compare</span><span class="p">(</span><span class="n">record_pair</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">field</span><span class="p">],</span>
-                                              <span class="n">record_pair</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">field</span><span class="p">])</span> 
-                                      <span class="k">for</span> <span class="n">record_pair</span> <span class="ow">in</span> <span class="n">record_pairs</span> 
-                                      <span class="k">for</span> <span class="n">field</span><span class="p">,</span> <span class="n">compare</span> <span class="ow">in</span> <span class="n">field_comparators</span><span class="p">),</span> 
-                                     <span class="s">&#39;f4&#39;</span><span class="p">)</span>
-    <span class="n">field_distances</span> <span class="o">=</span> <span class="n">field_distances</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">field_comparators</span><span class="p">))</span>
-
-    <span class="n">interaction_distances</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">field_distances</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                                         <span class="nb">len</span><span class="p">(</span><span class="n">interactions</span><span class="p">)))</span>
-
-    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">interaction</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">interactions</span><span class="p">)</span> <span class="p">:</span>
-        <span class="n">a</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">field_distances</span><span class="p">[</span><span class="o">...</span><span class="p">,</span><span class="n">interaction</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">interaction_distances</span><span class="p">[</span><span class="o">...</span><span class="p">,</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span>
-       
-    <span class="n">field_distances</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">field_distances</span><span class="p">,</span>
-                                         <span class="n">interaction_distances</span><span class="p">),</span>
-                                        <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-
-        
-
-    <span class="n">missing_data</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">field_distances</span><span class="p">)</span>
-
-    <span class="n">field_distances</span><span class="p">[</span><span class="n">missing_data</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-
-    <span class="n">missing_indicators</span> <span class="o">=</span> <span class="mi">1</span><span class="o">-</span><span class="n">missing_data</span><span class="p">[:,</span><span class="n">missing_field_indices</span><span class="p">]</span>
-
-    
-
-    <span class="n">field_distances</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">field_distances</span><span class="p">,</span>
-                                         <span class="mi">1</span><span class="o">-</span><span class="n">missing_data</span><span class="p">[:,</span><span class="n">missing_field_indices</span><span class="p">]),</span>
-                                        <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">field_distances</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-7'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-7'>#</a>
-      </div>
-      
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre><span class="k">def</span> <span class="nf">scorePairs</span><span class="p">(</span><span class="n">field_distances</span><span class="p">,</span> <span class="n">data_model</span><span class="p">):</span>
-    <span class="n">fields</span> <span class="o">=</span> <span class="n">data_model</span><span class="p">[</span><span class="s">&#39;fields&#39;</span><span class="p">]</span>
-    <span class="n">field_names</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">data_model</span><span class="p">[</span><span class="s">&#39;fields&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-
-    <span class="n">field_weights</span> <span class="o">=</span> <span class="p">[</span><span class="n">fields</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s">&#39;weight&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">field_names</span><span class="p">]</span>
-    <span class="n">bias</span> <span class="o">=</span> <span class="n">data_model</span><span class="p">[</span><span class="s">&#39;bias&#39;</span><span class="p">]</span>
-
-    <span class="n">distances</span> <span class="o">=</span> <span class="n">field_distances</span><span class="p">[</span><span class="s">&#39;distances&#39;</span><span class="p">]</span>
-
-    <span class="n">scores</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">distances</span><span class="p">,</span> <span class="n">field_weights</span><span class="p">)</span>
-
-    <span class="n">scores</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">scores</span> <span class="o">+</span> <span class="n">bias</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">numpy</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">scores</span> <span class="o">+</span> <span class="n">bias</span><span class="p">))</span>
-
-    <span class="k">return</span> <span class="n">scores</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-8'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-8'>#</a>
-      </div>
-      
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre><span class="k">def</span> <span class="nf">scoreDuplicates</span><span class="p">(</span><span class="n">candidates</span><span class="p">,</span> <span class="n">data_model</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
-
-    <span class="n">score_dtype</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&#39;pairs&#39;</span><span class="p">,</span> <span class="s">&#39;i4&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;score&#39;</span><span class="p">,</span> <span class="s">&#39;f4&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
-    <span class="n">scored_pairs</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">score_dtype</span><span class="p">)</span>
-
-    <span class="n">complete</span> <span class="o">=</span> <span class="bp">False</span>
-    <span class="n">chunk_size</span> <span class="o">=</span> <span class="mi">5000</span>
-    <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="k">while</span> <span class="ow">not</span> <span class="n">complete</span><span class="p">:</span>
-
-        <span class="n">can_slice</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">islice</span><span class="p">(</span><span class="n">candidates</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">chunk_size</span><span class="p">))</span>
-
-        <span class="n">field_distances</span> <span class="o">=</span> <span class="n">fieldDistances</span><span class="p">(</span><span class="n">can_slice</span><span class="p">,</span> <span class="n">data_model</span><span class="p">)</span>
-        <span class="n">duplicate_scores</span> <span class="o">=</span> <span class="n">scorePairs</span><span class="p">(</span><span class="n">field_distances</span><span class="p">,</span> <span class="n">data_model</span><span class="p">)</span>
-
-        <span class="n">scored_pairs</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">scored_pairs</span><span class="p">,</span>
-                                    <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">field_distances</span><span class="p">[</span><span class="s">&#39;pairs&#39;</span><span class="p">],</span>
-                                                    <span class="n">duplicate_scores</span><span class="p">),</span>
-                                                <span class="n">dtype</span><span class="o">=</span><span class="n">score_dtype</span><span class="p">)[</span><span class="n">duplicate_scores</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="p">],</span> 
-                                    <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">field_distances</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">chunk_size</span><span class="p">:</span>
-            <span class="n">complete</span> <span class="o">=</span> <span class="bp">True</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;num chunks </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">)</span>
-
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;all scores </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">scored_pairs</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-    <span class="n">scored_pairs</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">scored_pairs</span><span class="p">)</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;unique scores </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">scored_pairs</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">scored_pairs</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-9'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-9'>#</a>
-      </div>
-      
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre><span class="k">class</span> <span class="nc">frozendict</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    A data type for hashable dictionaries</span>
-<span class="sd">    From http://code.activestate.com/recipes/414283-frozen-dictionaries/</span>
-<span class="sd">    &#39;&#39;&#39;</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-10'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-10'>#</a>
-      </div>
-      
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">_blocked_attribute</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s">&#39;A frozendict cannot be modified.&#39;</span><span class="p">)</span>
-
-    <span class="n">_blocked_attribute</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_blocked_attribute</span><span class="p">)</span>
-
-    <span class="n">__delitem__</span> <span class="o">=</span> <span class="n">__setitem__</span> <span class="o">=</span> <span class="n">clear</span> <span class="o">=</span> <span class="n">_blocked_attribute</span>
-    <span class="n">pop</span> <span class="o">=</span> <span class="n">popitem</span> <span class="o">=</span> <span class="n">setdefault</span> <span class="o">=</span> <span class="n">update</span> <span class="o">=</span> <span class="n">_blocked_attribute</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-11'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-11'>#</a>
-      </div>
-      
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
-        <span class="n">new</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">__new__</span><span class="p">(</span><span class="n">cls</span><span class="p">)</span>
-        <span class="nb">dict</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">new</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">new</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-12'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-12'>#</a>
-      </div>
-      
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
-        <span class="k">pass</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-13'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-13'>#</a>
-      </div>
-      
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cached_hash</span>
-        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-            <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cached_hash</span> <span class="o">=</span> <span class="nb">hash</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">())))</span>
-            <span class="k">return</span> <span class="n">h</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-14'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-14'>#</a>
-      </div>
-      <h1>{{{ http://code.activestate.com/recipes/576693/ (r9)</h1>
-<p>Backport of OrderedDict() class that runs on Python 2.4, 2.5, 2.6, 2.7 and pypy.
-Passes Python2.7's test suite and incorporates all the latest updates.</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre><span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">thread</span> <span class="kn">import</span> <span class="n">get_ident</span> <span class="k">as</span> <span class="n">_get_ident</span>
-<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">dummy_thread</span> <span class="kn">import</span> <span class="n">get_ident</span> <span class="k">as</span> <span class="n">_get_ident</span>
-
-<span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">_abcoll</span> <span class="kn">import</span> <span class="n">KeysView</span><span class="p">,</span> <span class="n">ValuesView</span><span class="p">,</span> <span class="n">ItemsView</span>
-<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="k">pass</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-15'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-15'>#</a>
-      </div>
-      
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre><span class="k">class</span> <span class="nc">OrderedDict</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
-    <span class="s">&#39;Dictionary that remembers insertion order&#39;</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-16'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-16'>#</a>
-      </div>
-      <p>An inherited dict maps keys to values.
-The inherited dict provides <strong>getitem</strong>, <strong>len</strong>, <strong>contains</strong>, and get.
-The remaining methods are order-aware.
-Big-O running times for all methods are the same as for regular dictionaries.</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-17'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-17'>#</a>
-      </div>
-      <p>The internal self.__map dictionary maps keys to links in a doubly linked list.
-The circular doubly linked list starts and ends with a sentinel element.
-The sentinel element never gets deleted (this simplifies the algorithm).
-Each link is stored as a list of length three:  [PREV, NEXT, KEY].</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-18'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-18'>#</a>
-      </div>
-      
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Initialize an ordered dictionary.  Signature is the same as for</span>
-<span class="sd">        regular dictionaries, but keyword arguments are not recommended</span>
-<span class="sd">        because their insertion order is arbitrary.</span>
-
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&#39;expected at most 1 arguments, got </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">))</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__root</span>
-        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__root</span> <span class="o">=</span> <span class="n">root</span> <span class="o">=</span> <span class="p">[]</span>                     <span class="c"># sentinel node</span>
-            <span class="n">root</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[</span><span class="n">root</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="bp">None</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__map</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__update</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-19'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-19'>#</a>
-      </div>
-      
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">dict_setitem</span><span class="o">=</span><span class="nb">dict</span><span class="o">.</span><span class="n">__setitem__</span><span class="p">):</span>
-        <span class="s">&#39;od.__setitem__(i, y) &lt;==&gt; od[i]=y&#39;</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-20'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-20'>#</a>
-      </div>
-      <p>Setting a new item creates a new link which goes at the end of the linked
-list, and the inherited dictionary is updated with the new key/value pair.</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-            <span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__root</span>
-            <span class="n">last</span> <span class="o">=</span> <span class="n">root</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">last</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">root</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__map</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">last</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">key</span><span class="p">]</span>
-        <span class="n">dict_setitem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-21'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-21'>#</a>
-      </div>
-      
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">dict_delitem</span><span class="o">=</span><span class="nb">dict</span><span class="o">.</span><span class="n">__delitem__</span><span class="p">):</span>
-        <span class="s">&#39;od.__delitem__(y) &lt;==&gt; del od[y]&#39;</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-22'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-22'>#</a>
-      </div>
-      <p>Deleting an existing item uses self.__map to find the link which is
-then removed by updating the links in the predecessor and successor nodes.</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>        <span class="n">dict_delitem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
-        <span class="n">link_prev</span><span class="p">,</span> <span class="n">link_next</span><span class="p">,</span> <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__map</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-        <span class="n">link_prev</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">link_next</span>
-        <span class="n">link_next</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">link_prev</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-23'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-23'>#</a>
-      </div>
-      
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="s">&#39;od.__iter__() &lt;==&gt; iter(od)&#39;</span>
-        <span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__root</span>
-        <span class="n">curr</span> <span class="o">=</span> <span class="n">root</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="k">while</span> <span class="n">curr</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">root</span><span class="p">:</span>
-            <span class="k">yield</span> <span class="n">curr</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-            <span class="n">curr</span> <span class="o">=</span> <span class="n">curr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-24'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-24'>#</a>
-      </div>
-      
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">__reversed__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="s">&#39;od.__reversed__() &lt;==&gt; reversed(od)&#39;</span>
-        <span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__root</span>
-        <span class="n">curr</span> <span class="o">=</span> <span class="n">root</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">while</span> <span class="n">curr</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">root</span><span class="p">:</span>
-            <span class="k">yield</span> <span class="n">curr</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-            <span class="n">curr</span> <span class="o">=</span> <span class="n">curr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-25'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-25'>#</a>
-      </div>
-      
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="s">&#39;od.clear() -&gt; None.  Remove all items from od.&#39;</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__map</span><span class="o">.</span><span class="n">itervalues</span><span class="p">():</span>
-                <span class="k">del</span> <span class="n">node</span><span class="p">[:]</span>
-            <span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__root</span>
-            <span class="n">root</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[</span><span class="n">root</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="bp">None</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__map</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="nb">dict</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-26'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-26'>#</a>
-      </div>
-      
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">popitem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">last</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;od.popitem() -&gt; (k, v), return and remove a (key, value) pair.</span>
-<span class="sd">        Pairs are returned in LIFO order if last is true or FIFO order if false.</span>
-
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s">&#39;dictionary is empty&#39;</span><span class="p">)</span>
-        <span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__root</span>
-        <span class="k">if</span> <span class="n">last</span><span class="p">:</span>
-            <span class="n">link</span> <span class="o">=</span> <span class="n">root</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">link_prev</span> <span class="o">=</span> <span class="n">link</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">link_prev</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">root</span>
-            <span class="n">root</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">link_prev</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">link</span> <span class="o">=</span> <span class="n">root</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-            <span class="n">link_next</span> <span class="o">=</span> <span class="n">link</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-            <span class="n">root</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">link_next</span>
-            <span class="n">link_next</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">root</span>
-        <span class="n">key</span> <span class="o">=</span> <span class="n">link</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">__map</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-        <span class="n">value</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-27'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-27'>#</a>
-      </div>
-      <p>-- the following methods do not depend on the internal structure --</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-28'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-28'>#</a>
-      </div>
-      
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="s">&#39;od.keys() -&gt; list of keys in od&#39;</span>
-        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-29'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-29'>#</a>
-      </div>
-      
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="s">&#39;od.values() -&gt; list of values in od&#39;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">]</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-30'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-30'>#</a>
-      </div>
-      
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">items</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="s">&#39;od.items() -&gt; list of (key, value) pairs in od&#39;</span>
-        <span class="k">return</span> <span class="p">[(</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">])</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">]</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-31'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-31'>#</a>
-      </div>
-      
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">iterkeys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="s">&#39;od.iterkeys() -&gt; an iterator over the keys in od&#39;</span>
-        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-32'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-32'>#</a>
-      </div>
-      
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">itervalues</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="s">&#39;od.itervalues -&gt; an iterator over the values in od&#39;</span>
-        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-            <span class="k">yield</span> <span class="bp">self</span><span class="p">[</span><span class="n">k</span><span class="p">]</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-33'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-33'>#</a>
-      </div>
-      
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="s">&#39;od.iteritems -&gt; an iterator over the (key, value) items in od&#39;</span>
-        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-            <span class="k">yield</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="bp">self</span><span class="p">[</span><span class="n">k</span><span class="p">])</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-34'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-34'>#</a>
-      </div>
-      
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;od.update(E, **F) -&gt; None.  Update od from dict/iterable E and F.</span>
-
-<span class="sd">        If E is a dict instance, does:           for k in E: od[k] = E[k]</span>
-<span class="sd">        If E has a .keys() method, does:         for k in E.keys(): od[k] = E[k]</span>
-<span class="sd">        Or if E is an iterable of items, does:   for k, v in E: od[k] = v</span>
-<span class="sd">        In either case, this is followed by:     for k, v in F.items(): od[k] = v</span>
-
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&#39;update() takes at most 2 positional &#39;</span>
-                            <span class="s">&#39;arguments (</span><span class="si">%d</span><span class="s"> given)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">),))</span>
-        <span class="k">elif</span> <span class="ow">not</span> <span class="n">args</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&#39;update() takes at least 1 argument (0 given)&#39;</span><span class="p">)</span>
-        <span class="bp">self</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-35'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-35'>#</a>
-      </div>
-      <p>Make progressively weaker assumptions about "other"</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>        <span class="n">other</span> <span class="o">=</span> <span class="p">()</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="n">other</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">other</span><span class="p">:</span>
-                <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">other</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="s">&#39;keys&#39;</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">other</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">other</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">other</span><span class="p">:</span>
-                <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">kwds</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
-
-    <span class="n">__update</span> <span class="o">=</span> <span class="n">update</span>  <span class="c"># let subclasses override update without breaking __init__</span>
-
-    <span class="n">__marker</span> <span class="o">=</span> <span class="nb">object</span><span class="p">()</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-36'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-36'>#</a>
-      </div>
-      
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">__marker</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;od.pop(k[,d]) -&gt; v, remove specified key and return the corresponding value.</span>
-<span class="sd">        If key is not found, d is returned if given, otherwise KeyError is raised.</span>
-
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-            <span class="k">del</span> <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-            <span class="k">return</span> <span class="n">result</span>
-        <span class="k">if</span> <span class="n">default</span> <span class="ow">is</span> <span class="bp">self</span><span class="o">.</span><span class="n">__marker</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">default</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-37'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-37'>#</a>
-      </div>
-      
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">setdefault</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
-        <span class="s">&#39;od.setdefault(k[,d]) -&gt; od.get(k,d), also set od[k]=d if k not in od&#39;</span>
-        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-        <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">default</span>
-        <span class="k">return</span> <span class="n">default</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-38'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-38'>#</a>
-      </div>
-      
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_repr_running</span><span class="o">=</span><span class="p">{}):</span>
-        <span class="s">&#39;od.__repr__() &lt;==&gt; repr(od)&#39;</span>
-        <span class="n">call_key</span> <span class="o">=</span> <span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">_get_ident</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">call_key</span> <span class="ow">in</span> <span class="n">_repr_running</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s">&#39;...&#39;</span>
-        <span class="n">_repr_running</span><span class="p">[</span><span class="n">call_key</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="p">:</span>
-                <span class="k">return</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">()&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,)</span>
-            <span class="k">return</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">(</span><span class="si">%r</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
-        <span class="k">finally</span><span class="p">:</span>
-            <span class="k">del</span> <span class="n">_repr_running</span><span class="p">[</span><span class="n">call_key</span><span class="p">]</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-39'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-39'>#</a>
-      </div>
-      
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="s">&#39;Return state information for pickling&#39;</span>
-        <span class="n">items</span> <span class="o">=</span> <span class="p">[[</span><span class="n">k</span><span class="p">,</span> <span class="bp">self</span><span class="p">[</span><span class="n">k</span><span class="p">]]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">]</span>
-        <span class="n">inst_dict</span> <span class="o">=</span> <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="n">OrderedDict</span><span class="p">()):</span>
-            <span class="n">inst_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">inst_dict</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="p">(</span><span class="n">items</span><span class="p">,),</span> <span class="n">inst_dict</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="p">(</span><span class="n">items</span><span class="p">,)</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-40'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-40'>#</a>
-      </div>
-      
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="s">&#39;od.copy() -&gt; a shallow copy of od&#39;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-41'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-41'>#</a>
-      </div>
-      
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">fromkeys</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">iterable</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;OD.fromkeys(S[, v]) -&gt; New ordered dictionary with keys from S</span>
-<span class="sd">        and values equal to v (which defaults to None).</span>
-
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="n">d</span> <span class="o">=</span> <span class="n">cls</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">iterable</span><span class="p">:</span>
-            <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
-        <span class="k">return</span> <span class="n">d</span>
-
-    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;od.__eq__(y) &lt;==&gt; od==y.  Comparison to another OD is order-sensitive</span>
-<span class="sd">        while comparison to a regular mapping is order-insensitive.</span>
-
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">OrderedDict</span><span class="p">):</span>
-            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">==</span><span class="nb">len</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-        <span class="k">return</span> <span class="nb">dict</span><span class="o">.</span><span class="n">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">other</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-42'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-42'>#</a>
-      </div>
-      <p>-- the following methods are only used in Python 2.7 --</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-43'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-43'>#</a>
-      </div>
-      
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">viewkeys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="s">&quot;od.viewkeys() -&gt; a set-like object providing a view on od&#39;s keys&quot;</span>
-        <span class="k">return</span> <span class="n">KeysView</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-44'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-44'>#</a>
-      </div>
-      
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">viewvalues</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="s">&quot;od.viewvalues() -&gt; an object providing a view on od&#39;s values&quot;</span>
-        <span class="k">return</span> <span class="n">ValuesView</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-45'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-45'>#</a>
-      </div>
-      
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">viewitems</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="s">&quot;od.viewitems() -&gt; a set-like object providing a view on od&#39;s items&quot;</span>
-        <span class="k">return</span> <span class="n">ItemsView</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-46'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-46'>#</a>
-      </div>
-      <h1>end of http://code.activestate.com/recipes/576693/ }}}</h1>
+'''
+if len(args) &gt; 2:
+    raise TypeError('update() takes at most 2 positional '
+                    'arguments (%d given)' % (len(args),))
+elif not args:
+    raise TypeError('update() takes at least 1 argument (0 given)')
+self = args[0]
+# Make progressively weaker assumptions about "other"
+other = ()
+if len(args) == 2:
+    other = args[1]
+if isinstance(other, dict):
+    for key in other:
+        self[key] = other[key]
+elif hasattr(other, 'keys'):
+    for key in other.keys():
+        self[key] = other[key]
+else:
+    for key, value in other:
+        self[key] = value
+for key, value in kwds.items():
+    self[key] = value
+</code></pre>
+<p><strong>update = update  # let subclasses override update without breaking </strong>init__</p>
+<p>__marker = object()</p>
+<p>def pop(self, key, default=__marker):
+    '''od.pop(k[,d]) -&gt; v, remove specified key and return the corresponding value.
+    If key is not found, d is returned if given, otherwise KeyError is raised.</p>
+<pre><code>'''
+if key in self:
+    result = self[key]
+    del self[key]
+    return result
+if default is self.__marker:
+    raise KeyError(key)
+return default
+</code></pre>
+<p>def setdefault(self, key, default=None):
+    'od.setdefault(k[,d]) -&gt; od.get(k,d), also set od[k]=d if k not in od'
+    if key in self:
+        return self[key]
+    self[key] = default
+    return default</p>
+<p>def <strong>repr</strong>(self, _repr_running={}):
+    'od.<strong>repr</strong>() &lt;==&gt; repr(od)'
+    call_key = id(self), _get_ident()
+    if call_key in _repr_running:
+        return '...'
+    _repr_running[call_key] = 1
+    try:
+        if not self:
+            return '%s()' % (self.<strong>class</strong>.<strong>name</strong>,)
+        return '%s(%r)' % (self.<strong>class</strong>.<strong>name</strong>, self.items())
+    finally:
+        del _repr_running[call_key]</p>
+<p>def <strong>reduce</strong>(self):
+    'Return state information for pickling'
+    items = [k, self<a href="k,%20self[k.html">k</a> for k in self]
+    inst_dict = vars(self).copy()
+    for k in vars(OrderedDict()):
+        inst_dict.pop(k, None)
+    if inst_dict:
+        return (self.<strong>class</strong>, (items,), inst_dict)
+    return self.<strong>class</strong>, (items,)</p>
+<p>def copy(self):
+    'od.copy() -&gt; a shallow copy of od'
+    return self.<strong>class</strong>(self)</p>
+<p>@classmethod
+def fromkeys(cls, iterable, value=None):
+    '''OD.fromkeys(S[, v]) -&gt; New ordered dictionary with keys from S
+    and values equal to v (which defaults to None).</p>
+<pre><code>'''
+d = cls()
+for key in iterable:
+    d[key] = value
+return d
+</code></pre>
+<p>def <strong>eq</strong>(self, other):
+    '''od.<strong>eq</strong>(y) &lt;==&gt; od==y.  Comparison to another OD is order-sensitive
+    while comparison to a regular mapping is order-insensitive.</p>
+<pre><code>'''
+if isinstance(other, OrderedDict):
+    return len(self)==len(other) and self.items() == other.items()
+return dict.__eq__(self, other)
+</code></pre>
+<p>def <strong>ne</strong>(self, other):
+    return not self == other</p>
+<h1>-- the following methods are only used in Python 2.7 --</h1>
+<p>def viewkeys(self):
+    "od.viewkeys() -&gt; a set-like object providing a view on od's keys"
+    return KeysView(self)</p>
+<p>def viewvalues(self):
+    "od.viewvalues() -&gt; an object providing a view on od's values"
+    return ValuesView(self)</p>
+<p>def viewitems(self):
+    "od.viewitems() -&gt; a set-like object providing a view on od's items"
+    return ItemsView(self)
+nd of http://code.activestate.com/recipes/576693/ }}}</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>
