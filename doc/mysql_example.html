@@ -97,18 +97,25 @@ examples/mysql_example/mysql_example.py -v</code></p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-4'>#</a>
       </div>
-      <p>We'll be using variations on this select statement to pull in
-campaign donor info.  When we compare records, we don't care about
-differences in casing, so we lower the case (doing this in the
-database is much faster than in Python).</p>
+      <p>We'll be using variations on this following select statement to pull
+in campaign donor info.</p>
+<p>We are concatenating the first_name and last_name into a single name
+field and the address_1 and address_2 into a single address field. In
+this data, there is a lot of inconsitency of how these fields, so it
+is better to create these composite fields</p>
+<p>If a field is NULL, then we'll have MySQL return an empty string and
+if it's not null then we'll lower case the field</p>
+<p>Doing this preprocessing in MySQL is much faster than than in
+Python.</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="n">DONOR_SELECT</span> <span class="o">=</span> <span class="s">&quot;SELECT donor_id, LOWER(city) AS city, &quot;</span> \
-               <span class="s">&quot;LOWER(first_name) AS first_name, &quot;</span> \
-               <span class="s">&quot;LOWER(last_name) AS last_name, &quot;</span> \
-               <span class="s">&quot;LOWER(zip) AS zip, LOWER(state) AS state, &quot;</span> \
-               <span class="s">&quot;LOWER(address_1) AS address_1, &quot;</span> \
-               <span class="s">&quot;LOWER(address_2) AS address_2 FROM donors&quot;</span></pre></div>
+      <div class="highlight"><pre><span class="n">DONOR_SELECT</span> <span class="o">=</span> <span class="s">&quot;SELECT donor_id, &quot;</span> \
+               <span class="s">&quot;IFNULL(LOWER(city), &#39;&#39;) AS city, &quot;</span> \
+               <span class="s">&quot;LOWER(CONCAT_WS(&#39; &#39;, first_name, last_name)) AS name, &quot;</span> \
+               <span class="s">&quot;IFNULL(LOWER(zip),&#39;&#39;) AS zip, &quot;</span> \
+               <span class="s">&quot;IFNULL(LOWER(state),&#39;&#39;) AS state, &quot;</span> \
+               <span class="s">&quot;LOWER(CONCAT_WS(&#39; &#39;, address_1, address_2)) AS address &quot;</span> \
+               <span class="s">&quot;FROM donors&quot;</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -161,9 +168,8 @@ integers starting at 0 or 1</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">random_pair_generator</span><span class="p">():</span>
-        <span class="k">for</span> <span class="n">record_id_1</span><span class="p">,</span> <span class="n">record_id_2</span> <span class="ow">in</span> <span class="n">random_pairs</span><span class="p">:</span>
-            <span class="k">yield</span> <span class="p">((</span><span class="n">record_id_1</span><span class="p">,</span> <span class="n">temp_d</span><span class="p">[</span><span class="n">record_id_1</span><span class="p">]),</span>
-                   <span class="p">(</span><span class="n">record_id_2</span><span class="p">,</span> <span class="n">temp_d</span><span class="p">[</span><span class="n">record_id_2</span><span class="p">]))</span>
+        <span class="k">for</span> <span class="n">k1</span><span class="p">,</span> <span class="n">k2</span> <span class="ow">in</span> <span class="n">random_pairs</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="p">(</span><span class="n">temp_d</span><span class="p">[</span><span class="n">k1</span><span class="p">],</span> <span class="n">temp_d</span><span class="p">[</span><span class="n">k2</span><span class="p">])</span>
 
     <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">pair</span> <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">random_pair_generator</span><span class="p">())</span></pre></div>
     </div>
@@ -240,15 +246,16 @@ fairly large sample compared to <code>csv_example.py</code></p>
         <a class='octothorpe' href='#section-12'>#</a>
       </div>
       <p>Define the fields dedupe will pay attention to</p>
+<p>The address, city, and zip fields are often missing, so we'll
+tell dedupe that, and we'll learn a model that take that into
+account</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>    <span class="n">fields</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;first_name&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;String&#39;</span><span class="p">},</span>
-              <span class="s">&#39;last_name&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;String&#39;</span><span class="p">},</span>
-              <span class="s">&#39;address_1&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;String&#39;</span><span class="p">},</span>
-              <span class="s">&#39;address_2&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;String&#39;</span><span class="p">},</span>
-              <span class="s">&#39;city&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;String&#39;</span><span class="p">},</span>
+      <div class="highlight"><pre>    <span class="n">fields</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;String&#39;</span><span class="p">},</span>
+              <span class="s">&#39;address&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;String&#39;</span><span class="p">,</span> <span class="s">&#39;Has Missing&#39;</span> <span class="p">:</span> <span class="bp">True</span><span class="p">},</span>
+              <span class="s">&#39;city&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;String&#39;</span><span class="p">,</span> <span class="s">&#39;Has Missing&#39;</span> <span class="p">:</span> <span class="bp">True</span><span class="p">},</span>
               <span class="s">&#39;state&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;String&#39;</span><span class="p">},</span>
-              <span class="s">&#39;zip&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;String&#39;</span><span class="p">},</span>
+              <span class="s">&#39;zip&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;String&#39;</span><span class="p">,</span> <span class="s">&#39;Has Missing&#39;</span> <span class="p">:</span> <span class="bp">True</span><span class="p">},</span>
               <span class="p">}</span></pre></div>
     </div>
   </div>
@@ -539,7 +546,10 @@ To get around this, we chunk the blocked data in to groups of 10,000 blocks</p>
             <span class="k">print</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">,</span> <span class="s">&quot;seconds&quot;</span>
 
         <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">block_select</span><span class="p">,</span> <span class="p">(</span><span class="n">block_key</span><span class="p">,))</span>
-        <span class="k">yield</span> <span class="p">((</span><span class="n">row</span><span class="p">[</span><span class="s">&#39;donor_id&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">fetchall</span><span class="p">())</span></pre></div>
+        <span class="n">records</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span> <span class="p">:</span>
+            <span class="n">records</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">row</span><span class="p">[</span><span class="s">&#39;donor_id&#39;</span><span class="p">]</span> <span class="p">:</span> <span class="n">row</span><span class="p">})</span>
+        <span class="k">yield</span> <span class="n">records</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -570,7 +580,7 @@ that maximizes the weighted average of our precision and recall</p>
     <div class='code'>
       <div class="highlight"><pre><span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">blocking_key_sql</span> <span class="o">+</span> <span class="s">&quot; ORDER BY RAND() LIMIT 1000&quot;</span><span class="p">)</span>
 <span class="n">sampled_block_keys</span> <span class="o">=</span> <span class="n">block_keys</span> <span class="o">=</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s">&#39;block_key&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">fetchall</span><span class="p">())</span>
-<span class="n">threshold</span> <span class="o">=</span> <span class="n">deduper</span><span class="o">.</span><span class="n">goodThreshold</span><span class="p">(</span><span class="n">candidates_gen</span><span class="p">(</span><span class="n">sampled_block_keys</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span></pre></div>
+<span class="n">threshold</span> <span class="o">=</span> <span class="n">deduper</span><span class="o">.</span><span class="n">goodThreshold</span><span class="p">(</span><span class="n">candidates_gen</span><span class="p">(</span><span class="n">sampled_block_keys</span><span class="p">),</span> <span class="o">.</span><span class="mi">5</span><span class="p">)</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -670,25 +680,7 @@ of the data</p>
 <p>For example, let's see who the top 10 donors are.</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="n">locale</span><span class="o">.</span><span class="n">setlocale</span><span class="p">(</span><span class="n">locale</span><span class="o">.</span><span class="n">LC_ALL</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span> <span class="c"># for pretty printing numbers</span>
-
-<span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;SELECT donors.first_name AS first_name, &quot;</span>
-          <span class="s">&quot;       donors.last_name AS last_name, &quot;</span>
-          <span class="s">&quot;       donation_totals.totals AS totals &quot;</span>
-          <span class="s">&quot;FROM donors INNER JOIN &quot;</span>
-          <span class="s">&quot;(SELECT canon_id, &quot;</span>
-          <span class="s">&quot;        SUM(contributions.amount) AS totals &quot;</span>
-          <span class="s">&quot; FROM contributions INNER JOIN entity_map &quot;</span>
-          <span class="s">&quot; USING (donor_id) &quot;</span>
-          <span class="s">&quot; GROUP BY canon_id) AS donation_totals &quot;</span>
-          <span class="s">&quot; WHERE donors.donor_id = donation_totals.canon_id &quot;</span>
-          <span class="s">&quot;ORDER BY totals DESC &quot;</span>
-          <span class="s">&quot;LIMIT 10&quot;</span><span class="p">)</span>
-
-<span class="k">print</span> <span class="s">&quot;Top Donors (deduped)&quot;</span>
-<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span> <span class="p">:</span>
-    <span class="n">row</span><span class="p">[</span><span class="s">&#39;totals&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">locale</span><span class="o">.</span><span class="n">currency</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s">&#39;totals&#39;</span><span class="p">],</span> <span class="n">grouping</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-    <span class="k">print</span> <span class="s">&#39;</span><span class="si">%(totals)20s</span><span class="s">: </span><span class="si">%(last_name)s</span><span class="s"> </span><span class="si">%(first_name)s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">row</span></pre></div>
+      <div class="highlight"><pre><span class="n">locale</span><span class="o">.</span><span class="n">setlocale</span><span class="p">(</span><span class="n">locale</span><span class="o">.</span><span class="n">LC_ALL</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span> <span class="c"># for pretty printing numbers</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -697,13 +689,46 @@ of the data</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-40'>#</a>
       </div>
+      <p>Create a temporary table so each group and unmatched record has a unique id</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;CREATE TEMPORARY TABLE e_map &quot;</span>
+          <span class="s">&quot;SELECT IFNULL(canon_id, donor_id) AS canon_id, donor_id &quot;</span>
+          <span class="s">&quot;FROM entity_map &quot;</span>
+          <span class="s">&quot;RIGHT JOIN donors USING(donor_id)&quot;</span><span class="p">)</span>
+
+
+<span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;SELECT CONCAT_WS(&#39; &#39;, donors.first_name, donors.last_name) AS name, &quot;</span>
+          <span class="s">&quot;donation_totals.totals AS totals &quot;</span>
+          <span class="s">&quot;FROM donors INNER JOIN &quot;</span>
+          <span class="s">&quot;(SELECT canon_id, SUM(amount) AS totals &quot;</span>
+          <span class="s">&quot; FROM contributions INNER JOIN e_map &quot;</span>
+          <span class="s">&quot; USING (donor_id) &quot;</span>
+          <span class="s">&quot; GROUP BY (canon_id) &quot;</span>
+          <span class="s">&quot; ORDER BY totals &quot;</span>
+          <span class="s">&quot; DESC LIMIT 10) &quot;</span>
+          <span class="s">&quot;AS donation_totals &quot;</span>
+          <span class="s">&quot;WHERE donors.donor_id = donation_totals.canon_id&quot;</span><span class="p">)</span>
+
+
+<span class="k">print</span> <span class="s">&quot;Top Donors (deduped)&quot;</span>
+<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span> <span class="p">:</span>
+    <span class="n">row</span><span class="p">[</span><span class="s">&#39;totals&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">locale</span><span class="o">.</span><span class="n">currency</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s">&#39;totals&#39;</span><span class="p">],</span> <span class="n">grouping</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="si">%(totals)20s</span><span class="s">: </span><span class="si">%(name)s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">row</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-41'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-41'>#</a>
+      </div>
       <p>Compare this to what we would have gotten if we hadn't done any
 deduplication</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;SELECT donors.first_name AS first_name, &quot;</span>
-          <span class="s">&quot;       donors.last_name AS last_name, &quot;</span>
-          <span class="s">&quot;       SUM(contributions.amount) AS totals &quot;</span>
+      <div class="highlight"><pre><span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;SELECT CONCAT_WS(&#39; &#39;, donors.first_name, donors.last_name) as name, &quot;</span>
+          <span class="s">&quot;SUM(contributions.amount) AS totals &quot;</span>
           <span class="s">&quot;FROM donors INNER JOIN contributions &quot;</span>
           <span class="s">&quot;USING (donor_id) &quot;</span>
           <span class="s">&quot;GROUP BY (donor_id) &quot;</span>
@@ -713,14 +738,14 @@ deduplication</p>
 <span class="k">print</span> <span class="s">&quot;Top Donors (raw)&quot;</span>
 <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span> <span class="p">:</span>
     <span class="n">row</span><span class="p">[</span><span class="s">&#39;totals&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">locale</span><span class="o">.</span><span class="n">currency</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s">&#39;totals&#39;</span><span class="p">],</span> <span class="n">grouping</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-    <span class="k">print</span> <span class="s">&#39;</span><span class="si">%(totals)20s</span><span class="s">: </span><span class="si">%(last_name)s</span><span class="s"> </span><span class="si">%(first_name)s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">row</span></pre></div>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="si">%(totals)20s</span><span class="s">: </span><span class="si">%(name)s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">row</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-41'>
+  <div class='section' id='section-42'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-41'>#</a>
+        <a class='octothorpe' href='#section-42'>#</a>
       </div>
       <p>Close our database connection</p>
     </div>
