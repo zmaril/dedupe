@@ -33,6 +33,7 @@ compiled from several different sources.</p>
 <span class="kn">import</span> <span class="nn">collections</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">optparse</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">nan</span>
 
 <span class="kn">import</span> <span class="nn">AsciiDammit</span>
 
@@ -114,10 +115,13 @@ we'll use for zipcodes</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="k">def</span> <span class="nf">sameOrNotComparator</span><span class="p">(</span><span class="n">field_1</span><span class="p">,</span> <span class="n">field_2</span><span class="p">)</span> <span class="p">:</span>
-    <span class="k">if</span> <span class="n">field_1</span> <span class="o">==</span> <span class="n">field_2</span> <span class="p">:</span>
-        <span class="k">return</span> <span class="mi">1</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="mi">0</span></pre></div>
+    <span class="k">if</span> <span class="n">field_1</span> <span class="ow">and</span> <span class="n">field_2</span> <span class="p">:</span>
+        <span class="k">if</span> <span class="n">field_1</span> <span class="o">==</span> <span class="n">field_2</span> <span class="p">:</span>
+            <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">else</span> <span class="p">:</span>
+        <span class="k">return</span> <span class="n">nan</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -233,8 +237,10 @@ for the 'Zip' field. </p>
       <div class="highlight"><pre>    <span class="n">fields</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s">&#39;Site name&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;String&#39;</span><span class="p">},</span>
         <span class="s">&#39;Address&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;String&#39;</span><span class="p">},</span>
-        <span class="s">&#39;Zip&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;String&#39;</span><span class="p">,</span> <span class="s">&#39;Has Missing&#39;</span><span class="p">:</span><span class="bp">True</span><span class="p">},</span>
-        <span class="s">&#39;Phone&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;String&#39;</span><span class="p">,</span> <span class="s">&#39;Has Missing&#39;</span><span class="p">:</span><span class="bp">True</span><span class="p">},</span>
+        <span class="s">&#39;Zip&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;Custom&#39;</span><span class="p">,</span> 
+                <span class="s">&#39;comparator&#39;</span> <span class="p">:</span> <span class="n">sameOrNotComparator</span><span class="p">,</span> 
+                <span class="s">&#39;Has Missing&#39;</span> <span class="p">:</span> <span class="bp">True</span><span class="p">},</span>
+        <span class="s">&#39;Phone&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;String&#39;</span><span class="p">,</span> <span class="s">&#39;Has Missing&#39;</span> <span class="p">:</span> <span class="bp">True</span><span class="p">},</span>
         <span class="p">}</span></pre></div>
     </div>
   </div>
