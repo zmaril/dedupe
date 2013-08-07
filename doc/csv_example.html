@@ -163,9 +163,6 @@ and Regex. Things like casing, extra spaces, quotes and new lines can be ignored
 where the key is a unique record ID and each value is a 
 <a href="http://code.activestate.com/recipes/414283-frozen-dictionaries/">frozendict</a> 
 (hashable dictionary) of the row fields.</p>
-<p><strong>Currently, dedupe depends upon records' unique ids being integers
-with no integers skipped. The smallest valued unique id must be 0 or
-1. Expect this requirement will likely be relaxed in the future.</strong></p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="k">def</span> <span class="nf">readData</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span></pre></div>
