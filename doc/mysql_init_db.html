@@ -6,8 +6,8 @@
   <link rel="stylesheet" href="pycco.css">
 </head>
 <body>
+<div id="background"></div>
 <div id='container'>
-  <div id="background"></div>
   <div class='section'>
     <div class='docs'><h1>mysql_init_db.py</h1></div>
   </div>
@@ -39,8 +39,6 @@ named 'contributions'.</p>
 
 <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s">&#39;ignore&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">MySQLdb</span><span class="o">.</span><span class="n">Warning</span><span class="p">)</span>
 
-<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s">&#39;./examples/mysql_example/&#39;</span><span class="p">)</span>
-
 <span class="n">contributions_zip_file</span> <span class="o">=</span> <span class="s">&#39;Illinois-campaign-contributions.txt.zip&#39;</span>
 <span class="n">contributions_txt_file</span> <span class="o">=</span> <span class="s">&#39;Illinois-campaign-contributions.txt&#39;</span>
 
@@ -60,7 +58,7 @@ named 'contributions'.</p>
             <span class="n">zip_file</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
     <span class="n">zip_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
-<span class="n">conn</span> <span class="o">=</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">read_default_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;/mysql.cnf&#39;</span><span class="p">,</span> 
+<span class="n">conn</span> <span class="o">=</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">read_default_file</span> <span class="o">=</span> <span class="s">&#39;mysql.cnf&#39;</span><span class="p">,</span> 
                        <span class="n">local_infile</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
                        <span class="n">db</span><span class="o">=</span><span class="s">&#39;contributions&#39;</span><span class="p">)</span>
 <span class="n">c</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
@@ -85,7 +83,8 @@ named 'contributions'.</p>
           <span class="s">&quot; vendor_zip VARCHAR(10), description VARCHAR(90), &quot;</span>
           <span class="s">&quot; election_type VARCHAR(10), election_year VARCHAR(10), &quot;</span>
           <span class="s">&quot; report_period_begin VARCHAR(10), report_period_end VARCHAR(33), &quot;</span>
-          <span class="s">&quot; committee_name VARCHAR(70), committee_id VARCHAR(37))&quot;</span><span class="p">)</span>
+          <span class="s">&quot; committee_name VARCHAR(70), committee_id VARCHAR(37)) &quot;</span>
+          <span class="s">&quot;CHARACTER SET utf8 COLLATE utf8_unicode_ci&quot;</span><span class="p">)</span>
 
 
 <span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
@@ -104,7 +103,7 @@ named 'contributions'.</p>
           <span class="s">&quot; election_year, &quot;</span>
           <span class="s">&quot; report_period_begin, report_period_end, &quot;</span>
           <span class="s">&quot; committee_name, committee_id, @dummy)&quot;</span><span class="p">,</span>
-          <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;/&#39;</span> <span class="o">+</span> <span class="n">contributions_txt_file</span><span class="p">))</span>
+          <span class="p">(</span><span class="n">contributions_txt_file</span><span class="p">,))</span>
 <span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
 
 <span class="k">print</span> <span class="s">&#39;creating donors table...&#39;</span>
@@ -113,15 +112,19 @@ named 'contributions'.</p>
           <span class="s">&quot; last_name VARCHAR(70), first_name VARCHAR(35), &quot;</span>
           <span class="s">&quot; address_1 VARCHAR(35), address_2 VARCHAR(36), &quot;</span>
           <span class="s">&quot; city VARCHAR(20), state VARCHAR(15), &quot;</span>
-          <span class="s">&quot; zip VARCHAR(11))&quot;</span><span class="p">)</span>
+          <span class="s">&quot; zip VARCHAR(11), employer VARCHAR(35), &quot;</span>
+          <span class="s">&quot; occupation VARCHAR(35)) &quot;</span>
+          <span class="s">&quot;CHARACTER SET utf8 COLLATE utf8_unicode_ci&quot;</span><span class="p">)</span>
 <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;INSERT INTO donors &quot;</span>
           <span class="s">&quot;(first_name, last_name, address_1,&quot;</span>
-          <span class="s">&quot; address_2, city, state, zip) &quot;</span>
+          <span class="s">&quot; address_2, city, state, zip, employer, occupation) &quot;</span>
           <span class="s">&quot;SELECT DISTINCT &quot;</span>
-          <span class="s">&quot;first_name, last_name, address_1, &quot;</span>
-          <span class="s">&quot;address_2, city, state, zip &quot;</span>
+          <span class="s">&quot;TRIM(first_name), TRIM(last_name), TRIM(address_1),  &quot;</span>
+          <span class="s">&quot;TRIM(address_2), TRIM(city), TRIM(state), TRIM(zip), &quot;</span>
+          <span class="s">&quot;TRIM(employer), TRIM(occupation) &quot;</span>
           <span class="s">&quot;FROM raw_table&quot;</span><span class="p">)</span>
 <span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
 
 <span class="k">print</span> <span class="s">&#39;creating indexes on donors table&#39;</span>
 <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;CREATE INDEX donors_donor_info ON donors &quot;</span>
@@ -133,7 +136,8 @@ named 'contributions'.</p>
 
 <span class="k">print</span> <span class="s">&#39;creating recipients table...&#39;</span>
 <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;CREATE TABLE recipients &quot;</span>
-          <span class="s">&quot;(recipient_id INTEGER PRIMARY KEY AUTO_INCREMENT, name VARCHAR(70))&quot;</span><span class="p">)</span>
+          <span class="s">&quot;(recipient_id INTEGER PRIMARY KEY AUTO_INCREMENT, name VARCHAR(70)) &quot;</span>
+          <span class="s">&quot;CHARACTER SET utf8 COLLATE utf8_unicode_ci&quot;</span><span class="p">)</span>
 
 <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;INSERT IGNORE INTO recipients &quot;</span>
           <span class="s">&quot;SELECT DISTINCT committee_id, committee_name FROM raw_table&quot;</span><span class="p">)</span>
@@ -142,34 +146,39 @@ named 'contributions'.</p>
 <span class="k">print</span> <span class="s">&#39;creating contributions table&#39;</span>
 <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;CREATE TABLE contributions &quot;</span>
           <span class="s">&quot;(contribution_id INT, donor_id INT, recipient_id INT, &quot;</span>
-          <span class="s">&quot; report_type VARCHAR(24), date_recieved VARCHAR(10), &quot;</span>
+          <span class="s">&quot; report_type VARCHAR(24), date_recieved DATE, &quot;</span>
           <span class="s">&quot; loan_amount VARCHAR(12), amount VARCHAR(23), &quot;</span>
-          <span class="s">&quot; receipt_type VARCHAR(23), employer VARCHAR(70), &quot;</span>
-          <span class="s">&quot; occupation VARCHAR(40), vendor_last_name VARCHAR(70), &quot;</span>
+          <span class="s">&quot; receipt_type VARCHAR(23), &quot;</span>
+          <span class="s">&quot; vendor_last_name VARCHAR(70), &quot;</span>
           <span class="s">&quot; vendor_first_name VARCHAR(20), &quot;</span>
           <span class="s">&quot; vendor_address_1 VARCHAR(35), vendor_address_2 VARCHAR(31), &quot;</span>
           <span class="s">&quot; vendor_city VARCHAR(20), vendor_state VARCHAR(10), &quot;</span>
           <span class="s">&quot; vendor_zip VARCHAR(10), description VARCHAR(90), &quot;</span>
           <span class="s">&quot; election_type VARCHAR(10), election_year VARCHAR(10), &quot;</span>
-          <span class="s">&quot; report_period_begin VARCHAR(10), report_period_end VARCHAR(33))&quot;</span><span class="p">)</span>
+          <span class="s">&quot; report_period_begin DATE, report_period_end DATE) &quot;</span>
+          <span class="s">&quot;CHARACTER SET utf8 COLLATE utf8_unicode_ci&quot;</span><span class="p">)</span>
 
 
 <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;INSERT INTO contributions &quot;</span>
           <span class="s">&quot;SELECT reciept_id, donors.donor_id, committee_id, &quot;</span>
-          <span class="s">&quot; report_type, date_recieved, loan_amount, amount, &quot;</span>
-          <span class="s">&quot; receipt_type, employer, occupation, vendor_last_name , &quot;</span>
+          <span class="s">&quot; report_type, STR_TO_DATE(date_recieved, &#39;%m/</span><span class="si">%d</span><span class="s">/%Y&#39;), &quot;</span>
+          <span class="s">&quot; loan_amount, amount, &quot;</span>
+          <span class="s">&quot; receipt_type, vendor_last_name , &quot;</span>
           <span class="s">&quot; vendor_first_name, vendor_address_1, vendor_address_2, &quot;</span>
           <span class="s">&quot; vendor_city, vendor_state, vendor_zip, description, &quot;</span>
-          <span class="s">&quot; election_type, election_year, report_period_begin, &quot;</span>
-          <span class="s">&quot; report_period_end &quot;</span>
+          <span class="s">&quot; election_type, election_year, &quot;</span>
+          <span class="s">&quot; STR_TO_DATE(report_period_begin, &#39;%m/</span><span class="si">%d</span><span class="s">/%Y&#39;), &quot;</span>
+          <span class="s">&quot; STR_TO_DATE(report_period_end, &#39;%m/</span><span class="si">%d</span><span class="s">/%Y&#39;) &quot;</span>
           <span class="s">&quot;FROM raw_table JOIN donors ON &quot;</span>
-          <span class="s">&quot;donors.first_name = raw_table.first_name AND &quot;</span>
-          <span class="s">&quot;donors.last_name = raw_table.last_name AND &quot;</span>
-          <span class="s">&quot;donors.address_1 = raw_table.address_1 AND &quot;</span>
-          <span class="s">&quot;donors.address_2 = raw_table.address_2 AND &quot;</span>
-          <span class="s">&quot;donors.city = raw_table.city AND &quot;</span>
-          <span class="s">&quot;donors.state = raw_table.state AND &quot;</span>
-          <span class="s">&quot;donors.zip = raw_table.zip&quot;</span><span class="p">)</span>
+          <span class="s">&quot;donors.first_name = TRIM(raw_table.first_name) AND &quot;</span>
+          <span class="s">&quot;donors.last_name = TRIM(raw_table.last_name) AND &quot;</span>
+          <span class="s">&quot;donors.address_1 = TRIM(raw_table.address_1) AND &quot;</span>
+          <span class="s">&quot;donors.address_2 = TRIM(raw_table.address_2) AND &quot;</span>
+          <span class="s">&quot;donors.city = TRIM(raw_table.city) AND &quot;</span>
+          <span class="s">&quot;donors.state = TRIM(raw_table.state) AND &quot;</span>
+          <span class="s">&quot;donors.employer = TRIM(raw_table.employer) AND &quot;</span>
+          <span class="s">&quot;donors.occupation = TRIM(raw_table.occupation) AND &quot;</span>
+          <span class="s">&quot;donors.zip = TRIM(raw_table.zip)&quot;</span><span class="p">)</span>
 <span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
 
 <span class="k">print</span> <span class="s">&#39;creating indexes on contributions&#39;</span>
@@ -179,6 +188,23 @@ named 'contributions'.</p>
 
 
 <span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+<span class="k">print</span> <span class="s">&#39;nullifying empty strings in donors&#39;</span>
+<span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;UPDATE donors &quot;</span>
+          <span class="s">&quot;SET &quot;</span>
+          <span class="s">&quot;first_name = CASE first_name WHEN &#39;&#39; THEN NULL ELSE first_name END, &quot;</span>
+          <span class="s">&quot;last_name = CASE last_name WHEN &#39;&#39; THEN NULL ELSE last_name END, &quot;</span>
+          <span class="s">&quot;address_1 = CASE address_1 WHEN &#39;&#39; THEN NULL ELSE address_1 END, &quot;</span>
+          <span class="s">&quot;address_2 = CASE address_2 WHEN &#39;&#39; THEN NULL ELSE address_2 END, &quot;</span>
+          <span class="s">&quot;city = CASE city WHEN &#39;&#39; THEN NULL ELSE city END, &quot;</span>
+          <span class="s">&quot;state = CASE state WHEN &#39;&#39; THEN NULL ELSE state END, &quot;</span>
+          <span class="s">&quot;employer = CASE employer WHEN &#39;&#39; THEN NULL ELSE employer END, &quot;</span> 
+          <span class="s">&quot;occupation = CASE occupation WHEN &#39;&#39; THEN NULL ELSE occupation END, &quot;</span> 
+          <span class="s">&quot;zip = CASE zip WHEN &#39;&#39; THEN NULL ELSE zip END&quot;</span><span class="p">)</span>
+
+
+<span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
 
 <span class="n">c</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 <span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
