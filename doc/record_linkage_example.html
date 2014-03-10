@@ -188,21 +188,6 @@ where the key is a unique record ID.</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-9'>#</a>
       </div>
-      <p>These data have already been linked by hand, and linked records
-share the value of the field 'unique_id'. We are exploiting this work
-to create training data. This function also assume that if all pairs of
-records that DO NOT share a 'unique_id' value are distinct.</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre><span class="n">training_pairs</span> <span class="o">=</span> <span class="n">dedupe</span><span class="o">.</span><span class="n">trainingDataLink</span><span class="p">(</span><span class="n">data_1</span><span class="p">,</span> <span class="n">data_2</span><span class="p">,</span> <span class="s">&#39;unique_id&#39;</span><span class="p">,</span> <span class="mi">5000</span><span class="p">)</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-10'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-10'>#</a>
-      </div>
       <h2>Training</h2>
     </div>
     <div class='code'>
@@ -214,10 +199,10 @@ records that DO NOT share a 'unique_id' value are distinct.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-11'>
+  <div class='section' id='section-10'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-11'>#</a>
+        <a class='octothorpe' href='#section-10'>#</a>
       </div>
       <p>Define the fields the linker will pay attention to</p>
 <p>Notice how we are telling the linker to use a custom field comparator
@@ -234,10 +219,10 @@ for the 'Zip' field. </p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-12'>
+  <div class='section' id='section-11'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-12'>#</a>
+        <a class='octothorpe' href='#section-11'>#</a>
       </div>
       <p>Create a new linker object and pass our data model to it.</p>
     </div>
@@ -246,10 +231,10 @@ for the 'Zip' field. </p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-13'>
+  <div class='section' id='section-12'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-13'>#</a>
+        <a class='octothorpe' href='#section-12'>#</a>
       </div>
       <p>To train the linker, we feed it a random sample of records.</p>
     </div>
@@ -258,16 +243,38 @@ for the 'Zip' field. </p>
     </div>
   </div>
   <div class='clearall'></div>
+  <div class='section' id='section-13'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-13'>#</a>
+      </div>
+      <p>If we have training data saved from a previous run of linker,
+look for it an load it in.
+<strong>Note:</strong> if you want to train from scratch, delete the training_file</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">training_file</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&#39;reading labeled examples from &#39;</span><span class="p">,</span> <span class="n">training_file</span>
+        <span class="n">linker</span><span class="o">.</span><span class="n">readTraining</span><span class="p">(</span><span class="n">training_file</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
   <div class='section' id='section-14'>
     <div class='docs'>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-14'>#</a>
       </div>
-      <p>This is how we provide the constructed training data to the
-linker</p>
+      <h2>Active learning</h2>
+<p>Dedupe will find the next pair of records
+it is least certain about and ask you to label them as matches
+or not.
+use 'y', 'n' and 'u' keys to flag duplicates
+press 'f' when you are finished</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>    <span class="n">linker</span><span class="o">.</span><span class="n">markPairs</span><span class="p">(</span><span class="n">training_pairs</span><span class="p">)</span>
+      <div class="highlight"><pre>    <span class="k">print</span> <span class="s">&#39;starting active labeling...&#39;</span>
+
+    <span class="n">dedupe</span><span class="o">.</span><span class="n">consoleLabel</span><span class="p">(</span><span class="n">linker</span><span class="p">)</span>
 
     <span class="n">linker</span><span class="o">.</span><span class="n">train</span><span class="p">()</span></pre></div>
     </div>
