@@ -5,6 +5,7 @@ import itertools
 import warnings
 import numpy
 import collections
+import os
 
 import dedupe.backport as backport
 import dedupe.lr as lr
@@ -173,13 +174,16 @@ class ScoringFunction(object) :
         self.dtype = dtype
     def __call__(self, chunk_queue, scored_pairs_queue) :
         while True :
+            print("%d get chunk" % os.getpid())
             record_pairs = chunk_queue.get()
             if record_pairs is None :
                 # put the poison pill back in the queue so that other
                 # scorers will know to stop
+                print("%d put none" % os.getpid())
                 chunk_queue.put(None)
                 break
             scored_pairs = self.scoreRecords(record_pairs)
+            print("%d put scored" % os.getpid())            
             scored_pairs_queue.put(scored_pairs)
 
     def scoreRecords(self, record_pairs) :
@@ -204,9 +208,10 @@ class ScoringFunction(object) :
         return scored_pairs
 
 def scoreDuplicates(records, data_model, num_processes, threshold=0):
+    print("%d(master) scoring duplicates" % os.getpid())
     records = iter(records)
 
-    chunk_size = 1000
+    chunk_size = 100
 
     queue_size = num_processes
     record_pairs_queue = backport.Queue(queue_size)
@@ -228,25 +233,18 @@ def scoreDuplicates(records, data_model, num_processes, threshold=0):
 
     num_chunks = 0
     num_records = 0
-
+    
     while True :
         chunk = list(itertools.islice(records, chunk_size))
         if chunk :
+            print("%d(master) put record chunk on queue, %d" % (os.getpid(),num_records))
             record_pairs_queue.put(chunk)
             num_chunks += 1
             num_records += chunk_size
-
-            if num_chunks > queue_size :
-                if record_pairs_queue.full() :
-                    if chunk_size < 100000 :
-                        if num_chunks % 10 == 0 :
-                            chunk_size = int(chunk_size * 1.1)
-                else :
-                    if chunk_size > 100 :
-                        chunk_size = int(chunk_size * 0.9)
         else :
             # put poison pill in queue to tell scorers that they are
             # done
+            print("%d(master) put first NONE on record_pairs" % os.getpid())
             record_pairs_queue.put(None)
             break
 
@@ -255,13 +253,14 @@ def scoreDuplicates(records, data_model, num_processes, threshold=0):
 
     start = 0
     for _ in xrange(num_chunks) :
+        print("%d(master) get scored" % os.getpid())
         score_chunk = scored_pairs_queue.get()
         end = start + len(score_chunk)
         scored_pairs[start:end,] = score_chunk
         start = end
-
+        
     scored_pairs.resize((end,))
-
+    print("%d(master) joining processes" % os.getpid())
     [process.join() for process in processes]
 
     return scored_pairs
